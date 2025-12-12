@@ -5,6 +5,10 @@ site_author: Universität Frankfurt
 repo_url: https://github.com/example/repo
 repo_name: Datenschutzportal
 
+plugins:
+  - search
+  - mermaid2
+
 theme:
   name: material
   language: de
@@ -56,9 +60,8 @@ nav:
   - Frontend:
     - Architektur: frontend/architecture.md
     - Übersetzungen: frontend/translations.md
-  - Deployment:
-    - Guide: deployment/index.md
-    - Tech Stack: deployment/tech_stack.md
+  - Deployment: deployment/index.md
+  - "Tech Stack": deployment/tech_stack.md
   - Guidelines:
     - Contributing: guidelines/contributing.md
     - General: guidelines/general.md
