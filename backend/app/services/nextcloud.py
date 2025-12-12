@@ -68,6 +68,23 @@ class NextcloudService:
             print(f"Error uploading metadata: {e}")
             # raise
             return False
+
+    async def upload_content(self, content: str, remote_path: str) -> bool:
+        """
+        Upload text content to Nextcloud
+        """
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as tmp_file:
+                tmp_file.write(content)
+                tmp_path = tmp_file.name
+            
+            self.client.upload_sync(remote_path=remote_path, local_path=tmp_path)
+            os.unlink(tmp_path)
+            
+            return True
+        except Exception as e:
+            print(f"Error uploading content: {e}")
+            return False
     
     async def get_metadata(self, project_id: str) -> Dict[Any, Any]:
         """

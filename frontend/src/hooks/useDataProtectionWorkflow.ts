@@ -7,14 +7,15 @@ export function useDataProtectionWorkflow() {
   const { t } = useLanguage();
 
   // Workflow state
-  const [currentStep, setCurrentStep] = useState<WorkflowStep>('institution');
-  const [selectedInstitution, setSelectedInstitution] = useState<Institution>(null);
+  const [currentStep, setCurrentStep] = useState<WorkflowStep>('projectType');
+  const [selectedInstitution, setSelectedInstitution] = useState<Institution>('university');
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType>(null);
 
   // Form state
   const [email, setEmail] = useState('');
   const [uploaderName, setUploaderName] = useState('');
   const [projectTitle, setProjectTitle] = useState('');
+  const [projectDetails, setProjectDetails] = useState('');
   const [isProspectiveStudy, setIsProspectiveStudy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -48,9 +49,10 @@ export function useDataProtectionWorkflow() {
   };
 
   const handleBackToInstitution = () => {
-    setCurrentStep('institution');
-    setSelectedInstitution(null);
-    setSelectedProjectType(null);
+    // Institution selection removed
+    // setCurrentStep('institution');
+    // setSelectedInstitution(null);
+    // setSelectedProjectType(null);
   };
 
   const handleBackToProjectType = () => {
@@ -122,6 +124,7 @@ export function useDataProtectionWorkflow() {
         email,
         uploaderName,
         projectTitle,
+        projectDetails,
         institution: selectedInstitution || 'university',
         isProspectiveStudy,
         categories
@@ -142,14 +145,16 @@ export function useDataProtectionWorkflow() {
     setEmail('');
     setUploaderName('');
     setProjectTitle('');
+    setProjectDetails('');
     setIsProspectiveStudy(false);
     setCategories(prev => prev.map(cat => ({ ...cat, files: [] })));
     setShowSuccess(false);
     setUploadTimestamp('');
     setErrors([]);
     setWarnings([]);
-    setCurrentStep('institution');
-    setSelectedInstitution(null);
+    setCurrentStep('projectType');
+    // Keep default institution
+    setSelectedInstitution('university');
     setSelectedProjectType(null);
   };
 
@@ -161,6 +166,7 @@ export function useDataProtectionWorkflow() {
     email,
     uploaderName,
     projectTitle,
+    projectDetails,
     isProspectiveStudy,
     isSubmitting,
     showSuccess,
@@ -173,6 +179,7 @@ export function useDataProtectionWorkflow() {
     setEmail,
     setUploaderName,
     setProjectTitle,
+    setProjectDetails,
     setIsProspectiveStudy,
     
     // Handlers

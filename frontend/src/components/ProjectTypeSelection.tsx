@@ -1,20 +1,13 @@
-import { FilePlus, FolderOpen, ArrowLeft } from 'lucide-react';
+import { FilePlus, FolderOpen } from 'lucide-react';
 import { LanguageSwitch } from './LanguageSwitch';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Institution } from '../types';
 
 interface ProjectTypeSelectionProps {
-  institution: Institution;
   onSelect: (type: 'new' | 'existing') => void;
-  onBack: () => void;
 }
 
-export function ProjectTypeSelection({ institution, onSelect, onBack }: ProjectTypeSelectionProps) {
+export function ProjectTypeSelection({ onSelect }: ProjectTypeSelectionProps) {
   const { t } = useLanguage();
-
-  const institutionName = institution === 'university' 
-    ? t('institution.university')
-    : t('institution.clinic');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
@@ -24,19 +17,10 @@ export function ProjectTypeSelection({ institution, onSelect, onBack }: ProjectT
           <LanguageSwitch />
         </div>
 
-        {/* Back Button */}
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>{t('projectType.back')}</span>
-        </button>
-
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-gray-900 mb-2">{t('projectType.title')}</h1>
-          <p className="text-gray-600">{institutionName}</p>
+          <p className="text-gray-600">{t('institution.university')} / {t('institution.clinic')}</p>
         </div>
 
         {/* Project Type Selection */}

@@ -6,6 +6,7 @@ export interface UploadData {
   projectTitle: string;
   institution: string;
   isProspectiveStudy: boolean;
+  projectDetails?: string;
   categories: FileCategory[];
 }
 
@@ -38,14 +39,51 @@ export const api = {
     formData.append('project_title', data.projectTitle);
     formData.append('institution', data.institution);
     formData.append('is_prospective_study', String(data.isProspectiveStudy));
+    if (data.projectDetails) {
+      formData.append('project_details', data.projectDetails);
+    }
 
     // Process files and categories
     const categoryMap: Record<string, string> = {};
 
     data.categories.forEach((category) => {
       category.files.forEach((file) => {
-        formData.append('files', file);
-        categoryMap[file.name] = category.key;
+        let fileToUpload = file;
+        
+        // Renaming logic based on requirements
+        let prefix = '';
+        // Use first 10 chars of title, replace potentially problematic chars for filenames
+        const titlePart = data.projectTitle.substring(0, 10).replace(/[\/\\:]/g, '_');
+        
+        switch (category.key) {
+          case 'verantwortung':
+            prefix = 'Verpflichtung_';
+            break;
+          case 'schulung_uni':
+            prefix = 'SchulungGU_';
+            break;
+          case 'schulung_ukf':
+            prefix = 'SchulungUKF_';
+            break;
+          case 'datenschutzkonzept':
+            prefix = `DSK_${titlePart}_`;
+            break;
+          case 'einwilligung':
+            prefix = `EW_${titlePart}_`;
+            break;
+          case 'ethikvotum':
+            prefix = 'ethik_';
+            break;
+          // 'sonstiges' keeps original name as per implied requirements (only specific prefixes listed)
+        }
+
+        if (prefix) {
+          const newName = prefix + file.name;
+          fileToUpload = new File([file], newName, { type: file.type });
+        }
+
+        formData.append('files', fileToUpload);
+        categoryMap[fileToUpload.name] = category.key;
       });
     });
 
