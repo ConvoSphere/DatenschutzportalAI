@@ -62,23 +62,30 @@ Das Datenschutzportal ist eine webbasierte Anwendung für Forscher der Universit
 
 ```
 /
-├── components/              # React Komponenten
-│   ├── DataProtectionPortal.tsx    # Hauptkomponente mit Workflow
-│   ├── InstitutionSelection.tsx    # Institution-Auswahl
-│   ├── ProjectTypeSelection.tsx    # Projekt-Typ-Auswahl
-│   ├── ExistingProjectForm.tsx     # Projektsuche
-│   ├── FileUploadSection.tsx       # Datei-Upload
-│   ├── UploadProgress.tsx          # Fortschrittsanzeige
-│   ├── PDFPreview.tsx              # PDF-Vorschau
-│   ├── ConfirmationPage.tsx        # Bestätigungsseite
-│   ├── LanguageSwitch.tsx          # Sprachwechsel
-│   └── ui/                         # Wiederverwendbare UI-Komponenten
-├── contexts/
-│   └── LanguageContext.tsx         # Internationalisierung
-├── styles/
-│   └── globals.css                 # Globale Styles & Tailwind
-├── docs/                           # Dokumentation
-└── App.tsx                         # Entry Point
+├── frontend/
+│   ├── src/
+│   │   ├── components/              # React Komponenten
+│   │   │   ├── DataProtectionPortal.tsx    # Hauptkomponente mit Workflow
+│   │   │   ├── ...
+│   │   │   └── ui/                         # Wiederverwendbare UI-Komponenten
+│   │   ├── contexts/
+│   │   │   └── LanguageContext.tsx         # Internationalisierung
+│   │   ├── hooks/
+│   │   │   └── useDataProtectionWorkflow.ts # Workflow Logik
+│   │   ├── services/
+│   │   │   └── api.ts                      # API Layer
+│   │   ├── styles/
+│   │   │   └── globals.css                 # Globale Styles
+│   │   ├── types/
+│   │   │   └── index.ts                    # Shared Types
+│   │   └── App.tsx                         # Entry Point
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.ts
+├── docs/                               # Projektdokumentation
+│   ├── API_DOCUMENTATION.md
+│   ├── FRONTEND_ARCHITECTURE.md
+│   └── ...
 ```
 
 ## Quick Start
