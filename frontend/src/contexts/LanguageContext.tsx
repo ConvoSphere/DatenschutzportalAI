@@ -5,7 +5,7 @@ type Language = 'de' | 'en';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const translations = {
@@ -91,6 +91,28 @@ const translations = {
     'upload.formats': 'PDF, DOC, DOCX, ODT, ODS, ODP, ZIP, PNG, JPG',
     'upload.preview': 'Vorschau',
     'upload.close': 'Schließen',
+    'upload.inProgress': 'Dokumente werden hochgeladen...',
+    'upload.complete': 'Upload abgeschlossen!',
+    'upload.file': 'Datei',
+    'upload.files': 'Dateien',
+    'upload.elapsedTime': 'Verstrichene Zeit: {seconds} Sekunden',
+    'upload.emailDelay': 'Der E-Mail-Versand kann bei Problemen etwas länger dauern. Bitte haben Sie etwas Geduld.',
+    'upload.phase.preparing': 'Vorbereitung',
+    'upload.phase.preparing.desc': 'Dateien werden vorbereitet...',
+    'upload.phase.validating': 'Validierung',
+    'upload.phase.validating.desc': 'Dateien werden auf Gültigkeit geprüft...',
+    'upload.phase.connecting': 'Verbindung wird hergestellt',
+    'upload.phase.connecting.desc': 'Verbindung zur Nextcloud wird hergestellt...',
+    'upload.phase.uploading': 'Dateien werden hochgeladen',
+    'upload.phase.uploading.desc': '{count} Datei(en) werden hochgeladen...',
+    'upload.phase.processing': 'Verarbeitung',
+    'upload.phase.processing.desc': 'Metadaten werden erstellt...',
+    'upload.phase.email': 'E-Mail wird versendet',
+    'upload.phase.email.desc': 'Bestätigungs-E-Mail wird versendet...',
+    'upload.phase.completing': 'Abschluss',
+    'upload.phase.completing.desc': 'Upload wird abgeschlossen...',
+    'upload.phase.done': 'Abgeschlossen',
+    'upload.phase.done.desc': 'Alle Dokumente wurden erfolgreich hochgeladen.',
     
     // Errors
     'error.title': 'Bitte beheben Sie folgende Fehler:',
@@ -215,6 +237,28 @@ const translations = {
     'upload.formats': 'PDF, DOC, DOCX, ODT, ODS, ODP, ZIP, PNG, JPG',
     'upload.preview': 'Preview',
     'upload.close': 'Close',
+    'upload.inProgress': 'Documents are being uploaded...',
+    'upload.complete': 'Upload completed!',
+    'upload.file': 'file',
+    'upload.files': 'files',
+    'upload.elapsedTime': 'Elapsed time: {seconds} seconds',
+    'upload.emailDelay': 'Email sending may take longer if there are issues. Please be patient.',
+    'upload.phase.preparing': 'Preparing',
+    'upload.phase.preparing.desc': 'Files are being prepared...',
+    'upload.phase.validating': 'Validating',
+    'upload.phase.validating.desc': 'Files are being validated...',
+    'upload.phase.connecting': 'Connecting',
+    'upload.phase.connecting.desc': 'Connecting to Nextcloud...',
+    'upload.phase.uploading': 'Uploading files',
+    'upload.phase.uploading.desc': 'Uploading {count} file(s)...',
+    'upload.phase.processing': 'Processing',
+    'upload.phase.processing.desc': 'Creating metadata...',
+    'upload.phase.email': 'Sending email',
+    'upload.phase.email.desc': 'Sending confirmation email...',
+    'upload.phase.completing': 'Completing',
+    'upload.phase.completing.desc': 'Completing upload...',
+    'upload.phase.done': 'Done',
+    'upload.phase.done.desc': 'All documents have been successfully uploaded.',
     
     // Errors
     'error.title': 'Please fix the following errors:',
@@ -264,8 +308,17 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>('de');
 
-  const t = (key: string): string => {
-    return translations[language][key] || key;
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    let text = translations[language][key] || key;
+    
+    // Replace placeholders like {key} with values from params
+    if (params) {
+      Object.entries(params).forEach(([paramKey, value]) => {
+        text = text.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), String(value));
+      });
+    }
+    
+    return text;
   };
 
   return (

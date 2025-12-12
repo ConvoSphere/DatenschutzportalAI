@@ -44,11 +44,12 @@ class EmailService:
             }
             
             if settings.smtp_encryption == "starttls":
-                smtp_kwargs["use_tls"] = True
+                # STARTTLS: Upgrade unencrypted connection to TLS (typically port 587)
                 smtp_kwargs["start_tls"] = True
-            elif settings.smtp_encryption == "ssl":
                 smtp_kwargs["use_tls"] = False
-                smtp_kwargs["start_tls"] = False
+            elif settings.smtp_encryption == "ssl":
+                # SSL: Direct SSL/TLS connection (typically port 465)
+                smtp_kwargs["use_tls"] = True
                 smtp_kwargs["ssl_context"] = ssl.create_default_context()
             else:  # none
                 smtp_kwargs["use_tls"] = False
