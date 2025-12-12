@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Upload Bestätigung</h2>
+    <p>Sehr geehrte(r) {{ uploader_name }},</p>
+    <p>Ihr Projekt "<strong>{{ project_title }}</strong>" (ID: {{ project_id }}) wurde erfolgreich hochgeladen.</p>
+    <h3>Dateien:</h3>
+    <ul>
+        {% for file in files %}
+        <li>{{ file.filename }} ({{ file.category }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
