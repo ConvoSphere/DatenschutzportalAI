@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Informationen Datenschutzportal{% endblock %}
+
+{% block content %}
+<h2>Informationen zum Datenschutzportal</h2>
+<p>Sehr geehrte(r) {{ name or 'Interessent' }},</p>
+<p>Hier sind die angeforderten Informationen zur Nutzung des Datenschutzportals für Forschungsprojekte.</p>
+
+<h3>Wichtige Ressourcen</h3>
+<ul>
+    <li><a href="#">Moodle-Kurs Datenschutz in der Forschung</a></li>
+    <li><a href="#">Standard Operating Procedures (SOP)</a></li>
+    <li><a href="#">Forschungsportal der Universität</a></li>
+</ul>
+
+<div class="info-box">
+    <strong>Haben Sie Fragen?</strong><br>
+    Das Datenschutz-Team steht Ihnen gerne zur Verfügung. Antworten auf häufige Fragen finden Sie auch in unserem <a href="#">FAQ-Bereich</a>.
+</div>
+
+<p>Mit freundlichen Grüßen,<br>Ihr Datenschutz-Team</p>
+{% endblock %}

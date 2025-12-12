@@ -1,9 +1,10 @@
-import { ArrowLeft, AlertCircle, Upload, Mail, Info } from 'lucide-react';
+import { ArrowLeft, AlertCircle, Upload, Mail, Info, ExternalLink } from 'lucide-react';
 import { LanguageSwitch } from './LanguageSwitch';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Institution, FileCategory } from '../types';
 import { FileUploadSection } from './FileUploadSection';
 import { UploadProgress } from './UploadProgress';
+import { useState } from 'react';
 
 interface ExistingProjectFormProps {
   institution: Institution;
@@ -41,16 +42,31 @@ export function ExistingProjectForm({
   categories,
   onFilesAdded,
   onFileRemoved,
-  onSubmit,
+  onSubmit: originalOnSubmit,
   isSubmitting,
   errors,
   warnings
 }: ExistingProjectFormProps) {
   const { t } = useLanguage();
 
+  const [legalConfirmed, setLegalConfirmed] = useState(false);
+  const [localErrors, setLocalErrors] = useState<string[]>([]);
+
   const institutionName = `${t('institution.university')} / ${t('institution.clinic')}`;
 
   const totalFiles = categories.reduce((sum, cat) => sum + cat.files.length, 0);
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!legalConfirmed) {
+      setLocalErrors([t('error.legalRequired')]);
+      return;
+    }
+    setLocalErrors([]);
+    originalOnSubmit(e);
+  };
+
+  const allErrors = [...errors, ...localErrors];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
@@ -92,6 +108,14 @@ export function ExistingProjectForm({
             </div>
         </div>
 
+        {/* Templates Link */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <a href="#" className="flex items-center gap-2 text-blue-700 hover:text-blue-900 hover:underline">
+              <ExternalLink className="w-4 h-4" />
+              {t('existingProject.templates')}
+            </a>
+        </div>
+
         <form onSubmit={onSubmit}>
           {/* Form Fields */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-6">
@@ -112,6 +136,7 @@ export function ExistingProjectForm({
                         placeholder={t('form.titlePlaceholder')}
                         required
                     />
+                     <p className="text-sm text-gray-500 mt-1">{t('form.projectTitleHint')}</p>
                 </div>
 
                 {/* Email */}
@@ -171,15 +196,6 @@ export function ExistingProjectForm({
             
             <div className="space-y-6">
               {categories.map((category) => {
-                // In Existing Project workflow, check if categories are required.
-                // Assuming validation logic is in the hook, we pass isRequired prop.
-                // Hook logic: cat.required || (cat.conditionalRequired && isProspectiveStudy)
-                // Existing Project doesn't have isProspectiveStudy toggle visible here, so assuming false or passing existing state.
-                // But wait, the hook controls state.
-                // Since this form doesn't expose `isProspectiveStudy`, we assume it's false or irrelevant for conditional reqs unless we add it.
-                // The main requirement implies simplifying the form.
-                // However, "Upload weiterhin nur möglich, wenn alle Pflichtfelder und Dokumente vorhanden sind".
-                // I will use the `required` property from the category object.
                 const isRequired = category.required; 
                 
                 return (
@@ -202,15 +218,31 @@ export function ExistingProjectForm({
             </div>
           </div>
 
+          {/* Legal Confirmation */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+             <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="legalConfirmation"
+                  checked={legalConfirmed}
+                  onChange={(e) => setLegalConfirmed(e.target.checked)}
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="legalConfirmation" className="text-gray-900 font-medium">
+                  {t('form.legalConfirmation')} <span className="text-red-500">{t('form.required')}</span>
+                </label>
+             </div>
+          </div>
+
           {/* Errors and Warnings */}
-          {errors.length > 0 && (
+          {allErrors.length > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <div className="flex gap-3">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-red-900 mb-2">{t('error.title')}</p>
                   <ul className="list-disc list-inside space-y-1">
-                    {errors.map((error, index) => (
+                    {allErrors.map((error, index) => (
                       <li key={index} className="text-red-800">{error}</li>
                     ))}
                   </ul>

@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     
     # File Upload
     max_file_size: int = 52428800  # 50 MB
-    allowed_file_types: List[str] = [".pdf", ".doc", ".docx", ".zip"]
+    allowed_file_types: List[str] = [".pdf", ".doc", ".docx", ".zip", ".odt", ".ods", ".odp", ".png", ".jpg", ".jpeg"]
     
     class Config:
         env_file = ".env"

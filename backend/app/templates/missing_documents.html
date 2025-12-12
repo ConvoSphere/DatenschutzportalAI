@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Nachreichung erforderlich - {{ project_title }}{% endblock %}
+
+{% block content %}
+<h2>Nachreichung erforderlich</h2>
+<p>Sehr geehrte(r) {{ uploader_name or 'Nutzer' }},</p>
+<p>Wir haben Ihre Unterlagen für das Projekt <strong>"{{ project_title }}"</strong> (ID: {{ project_id }}) geprüft. Leider sind die Unterlagen noch nicht vollständig.</p>
+
+<div class="warning-box">
+    <strong>Folgende Unterlagen / Informationen fehlen:</strong>
+    <ul style="margin-top: 8px; margin-bottom: 0;">
+        {% for item in missing_items %}
+        <li>{{ item }}</li>
+        {% else %}
+        <li>Bitte prüfen Sie die Anmerkungen im Portal.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<p>Bitte reichen Sie die fehlenden Unterlagen zeitnah über das Datenschutzportal nach.</p>
+
+<a href="{{ portal_url | default('#') }}" class="button">Zum Datenschutzportal</a>
+
+<p style="margin-top: 24px;">
+    Nutzen Sie für die Nachreichung bitte die Funktion "Bestehendes Projekt bearbeiten" und geben Sie Ihre Projekt-ID ({{ project_id }}) an.
+</p>
+{% endblock %}

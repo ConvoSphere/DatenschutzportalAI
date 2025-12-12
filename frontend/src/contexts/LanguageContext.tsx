@@ -51,6 +51,7 @@ const translations = {
     'existingProject.moreInfo': 'Weitere Informationen zur Einreichung finden Sie hier',
     'existingProject.projectDetails': 'Projektdetails',
     'existingProject.projectDetailsPlaceholder': 'Bitte beschreiben Sie hier Ihr Anliegen...',
+    'existingProject.templates': 'Hier finden Sie Vorlagen für Nachreichungen',
     
     // Form
     'form.title': 'Datenschutzportal',
@@ -58,7 +59,8 @@ const translations = {
     'form.baseData': 'Basisdaten',
     'form.email': 'E-Mail-Adresse',
     'form.uploaderName': 'Name des Einreichenden (optional)',
-    'form.projectTitle': 'Projekttitel',
+    'form.projectTitle': 'Projekttitel (Kurztitel)',
+    'form.projectTitleHint': 'Unter diesem Titel wird Ihr Projekt kommuniziert.',
     'form.prospectiveStudy': 'Prospektive Studie / Prospektiver Anteil',
     'form.documents': 'Dokumente hochladen',
     'form.required': '*',
@@ -66,6 +68,13 @@ const translations = {
     'form.namePlaceholder': 'Max Mustermann',
     'form.titlePlaceholder': 'Titel des Forschungsprojekts',
     'form.back': 'Zurück zur Auswahl',
+    'form.legalConfirmation': 'Ich bestätige die rechtskonforme Nutzung der Daten.',
+    
+    // Links
+    'link.moodle': 'Moodle-Kurs',
+    'link.sop': 'SOP (Standard Operating Procedures)',
+    'link.research': 'Forschungsportal',
+    'link.email': 'E-Mail Datenschutz-Team',
     
     // Categories
     'category.datenschutzkonzept': 'Datenschutzkonzept',
@@ -79,7 +88,7 @@ const translations = {
     
     // File Upload
     'upload.dropzone': 'Klicken Sie hier oder ziehen Sie Dateien hierher',
-    'upload.formats': 'PDF, DOC, DOCX, ZIP oder andere Dateiformate',
+    'upload.formats': 'PDF, DOC, DOCX, ODT, ODS, ODP, ZIP, PNG, JPG',
     'upload.preview': 'Vorschau',
     'upload.close': 'Schließen',
     
@@ -90,6 +99,7 @@ const translations = {
     'error.titleRequired': 'Projekttitel ist erforderlich',
     'error.categoryRequired': 'ist ein Pflichtfeld',
     'error.uploadFailed': 'Ein Fehler ist beim Upload aufgetreten. Bitte versuchen Sie es erneut.',
+    'error.legalRequired': 'Bitte bestätigen Sie die rechtskonforme Nutzung der Daten.',
     
     // Submit
     'submit.filesReady': 'bereit zum Upload',
@@ -165,6 +175,7 @@ const translations = {
     'existingProject.moreInfo': 'Find more information about submission here',
     'existingProject.projectDetails': 'Project Details',
     'existingProject.projectDetailsPlaceholder': 'Please describe your request here...',
+    'existingProject.templates': 'Here you can find templates for resubmissions',
     
     // Form
     'form.title': 'Data Protection Portal',
@@ -172,7 +183,8 @@ const translations = {
     'form.baseData': 'Basic Data',
     'form.email': 'Email Address',
     'form.uploaderName': 'Uploader Name (optional)',
-    'form.projectTitle': 'Project Title',
+    'form.projectTitle': 'Project Title (Short Title)',
+    'form.projectTitleHint': 'Your project will be communicated under this title.',
     'form.prospectiveStudy': 'Prospective Study / Prospective Component',
     'form.documents': 'Upload Documents',
     'form.required': '*',
@@ -180,6 +192,13 @@ const translations = {
     'form.namePlaceholder': 'John Doe',
     'form.titlePlaceholder': 'Title of Research Project',
     'form.back': 'Back to Selection',
+    'form.legalConfirmation': 'I confirm the legally compliant use of the data.',
+    
+    // Links
+    'link.moodle': 'Moodle Course',
+    'link.sop': 'SOP (Standard Operating Procedures)',
+    'link.research': 'Research Portal',
+    'link.email': 'Data Protection Team Email',
     
     // Categories
     'category.datenschutzkonzept': 'Data Protection Concept',
@@ -193,7 +212,7 @@ const translations = {
     
     // File Upload
     'upload.dropzone': 'Click here or drag files here',
-    'upload.formats': 'PDF, DOC, DOCX, ZIP or other file formats',
+    'upload.formats': 'PDF, DOC, DOCX, ODT, ODS, ODP, ZIP, PNG, JPG',
     'upload.preview': 'Preview',
     'upload.close': 'Close',
     
@@ -204,6 +223,7 @@ const translations = {
     'error.titleRequired': 'Project title is required',
     'error.categoryRequired': 'is a required field',
     'error.uploadFailed': 'An error occurred during upload. Please try again.',
+    'error.legalRequired': 'Please confirm the legally compliant use of the data.',
     
     // Submit
     'submit.filesReady': 'ready for upload',

@@ -132,6 +132,10 @@ export function ConfirmationPage({
           <ul className="space-y-2 text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-blue-600 mt-1">•</span>
+              <span>Bitte bewahren Sie die Bestätigungs-E-Mail als Nachweis auf</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-600 mt-1">•</span>
               <span>Das Datenschutz-Team prüft Ihre hochgeladenen Dokumente</span>
             </li>
             <li className="flex items-start gap-2">

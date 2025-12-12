@@ -1,4 +1,4 @@
-import { Upload, Mail, FileText, AlertCircle, Info, ArrowLeft } from 'lucide-react';
+import { Upload, Mail, FileText, AlertCircle, Info, ArrowLeft, ExternalLink } from 'lucide-react';
 import { FileUploadSection } from './FileUploadSection';
 import { ConfirmationPage } from './ConfirmationPage';
 import { ProjectTypeSelection } from './ProjectTypeSelection';
@@ -7,6 +7,7 @@ import { LanguageSwitch } from './LanguageSwitch';
 import { UploadProgress } from './UploadProgress';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useDataProtectionWorkflow } from '../hooks/useDataProtectionWorkflow';
+import { useState } from 'react';
 
 export function DataProtectionPortal() {
   const { t } = useLanguage();
@@ -40,14 +41,27 @@ export function DataProtectionPortal() {
     handleBackToProjectType,
     handleFilesAdded,
     handleFileRemoved,
-    handleSubmit,
+    handleSubmit: originalHandleSubmit,
     handleNewUpload
   } = useDataProtectionWorkflow();
+
+  const [legalConfirmed, setLegalConfirmed] = useState(false);
+  const [localErrors, setLocalErrors] = useState<string[]>([]);
 
   const totalFiles = categories.reduce((sum, cat) => sum + cat.files.length, 0);
 
   // Institution name is now static/combined
   const institutionName = `${t('institution.university')} / ${t('institution.clinic')}`;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!legalConfirmed) {
+      setLocalErrors([t('error.legalRequired')]);
+      return;
+    }
+    setLocalErrors([]);
+    originalHandleSubmit(e);
+  };
 
   // Render different steps
   if (currentStep === 'projectType') {
@@ -74,7 +88,7 @@ export function DataProtectionPortal() {
         categories={categories}
         onFilesAdded={handleFilesAdded}
         onFileRemoved={handleFileRemoved}
-        onSubmit={handleSubmit}
+        onSubmit={originalHandleSubmit}
         isSubmitting={isSubmitting}
         errors={errors}
         warnings={warnings}
@@ -105,6 +119,8 @@ export function DataProtectionPortal() {
       />
     );
   }
+
+  const allErrors = [...errors, ...localErrors];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
@@ -137,12 +153,33 @@ export function DataProtectionPortal() {
         </div>
 
         {/* Informationsbox */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex gap-3">
-          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-blue-900">
-              {t('form.info')}
-            </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="flex gap-3 mb-4">
+            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-blue-900 mb-2">
+                {t('form.info')}
+              </p>
+            </div>
+          </div>
+          
+          <div className="border-t border-blue-200 pt-3 mt-2 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <a href="#" className="flex items-center gap-2 text-blue-700 hover:text-blue-900 hover:underline">
+              <ExternalLink className="w-4 h-4" />
+              {t('link.moodle')}
+            </a>
+            <a href="#" className="flex items-center gap-2 text-blue-700 hover:text-blue-900 hover:underline">
+              <ExternalLink className="w-4 h-4" />
+              {t('link.sop')}
+            </a>
+            <a href="#" className="flex items-center gap-2 text-blue-700 hover:text-blue-900 hover:underline">
+              <ExternalLink className="w-4 h-4" />
+              {t('link.research')}
+            </a>
+             <a href="mailto:datenschutz@uni-frankfurt.de" className="flex items-center gap-2 text-blue-700 hover:text-blue-900 hover:underline">
+              <Mail className="w-4 h-4" />
+              {t('link.email')}
+            </a>
           </div>
         </div>
 
@@ -197,6 +234,7 @@ export function DataProtectionPortal() {
                   placeholder={t('form.titlePlaceholder')}
                   required
                 />
+                <p className="text-sm text-gray-500 mt-1">{t('form.projectTitleHint')}</p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -235,15 +273,31 @@ export function DataProtectionPortal() {
             </div>
           </div>
 
+          {/* Legal Confirmation */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+             <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="legalConfirmation"
+                  checked={legalConfirmed}
+                  onChange={(e) => setLegalConfirmed(e.target.checked)}
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="legalConfirmation" className="text-gray-900 font-medium">
+                  {t('form.legalConfirmation')} <span className="text-red-500">{t('form.required')}</span>
+                </label>
+             </div>
+          </div>
+
           {/* Fehler und Warnungen */}
-          {errors.length > 0 && (
+          {allErrors.length > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <div className="flex gap-3">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-red-900 mb-2">{t('error.title')}</p>
                   <ul className="list-disc list-inside space-y-1">
-                    {errors.map((error, index) => (
+                    {allErrors.map((error, index) => (
                       <li key={index} className="text-red-800">{error}</li>
                     ))}
                   </ul>

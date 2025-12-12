@@ -1,14 +1,44 @@
-<!DOCTYPE html>
-<html>
-<body>
-    <h2>Upload Bestätigung</h2>
-    <p>Sehr geehrte(r) {{ uploader_name }},</p>
-    <p>Ihr Projekt "<strong>{{ project_title }}</strong>" (ID: {{ project_id }}) wurde erfolgreich hochgeladen.</p>
-    <h3>Dateien:</h3>
-    <ul>
-        {% for file in files %}
-        <li>{{ file.filename }} ({{ file.category }})</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Upload Bestätigung - {{ project_title }}{% endblock %}
+
+{% block content %}
+<h2>Upload erfolgreich</h2>
+<p>Sehr geehrte(r) {{ uploader_name or 'Nutzer' }},</p>
+<p>Vielen Dank für Ihre Einreichung. Ihr Projekt wurde erfolgreich in unserem System erfasst und die Dokumente sicher in der Nextcloud gespeichert.</p>
+
+<div class="info-box">
+    <table class="metadata-table">
+        <tr>
+            <td>Projekt-ID</td>
+            <td><strong>{{ project_id }}</strong></td>
+        </tr>
+        <tr>
+            <td>Projekttitel</td>
+            <td>{{ project_title }}</td>
+        </tr>
+        <tr>
+            <td>Zeitpunkt</td>
+            <td>{{ timestamp or 'Gerade eben' }}</td>
+        </tr>
+    </table>
+</div>
+
+<h3>Hochgeladene Dateien</h3>
+<ul>
+    {% for file in files %}
+    <li>
+        <strong>{{ file.filename }}</strong><br>
+        <span style="font-size: 13px; color: #6b7280;">Kategorie: {{ file.category }}</span>
+    </li>
+    {% endfor %}
+</ul>
+
+<h3>Weitere Hinweise</h3>
+<p>Das Datenschutz-Team wird Ihre Unterlagen zeitnah prüfen. Sollten Rückfragen bestehen oder weitere Unterlagen benötigt werden, melden wir uns bei Ihnen.</p>
+
+<p>
+    <strong>Wichtig:</strong> Bitte bewahren Sie diese E-Mail als Nachweis für Ihre Einreichung auf. 
+    Bei Rückfragen geben Sie bitte immer Ihre Projekt-ID ({{ project_id }}) an.
+</p>
+{% endblock %}
