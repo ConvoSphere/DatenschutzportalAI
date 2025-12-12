@@ -7,8 +7,8 @@ export function useDataProtectionWorkflow() {
   const { t } = useLanguage();
 
   // Workflow state
-  const [currentStep, setCurrentStep] = useState<WorkflowStep>('institution');
-  const [selectedInstitution, setSelectedInstitution] = useState<Institution>(null);
+  const [currentStep, setCurrentStep] = useState<WorkflowStep>('projectType');
+  const [selectedInstitution, setSelectedInstitution] = useState<Institution>('university');
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType>(null);
 
   // Form state
@@ -49,9 +49,10 @@ export function useDataProtectionWorkflow() {
   };
 
   const handleBackToInstitution = () => {
-    setCurrentStep('institution');
-    setSelectedInstitution(null);
-    setSelectedProjectType(null);
+    // Institution selection removed
+    // setCurrentStep('institution');
+    // setSelectedInstitution(null);
+    // setSelectedProjectType(null);
   };
 
   const handleBackToProjectType = () => {
@@ -151,8 +152,9 @@ export function useDataProtectionWorkflow() {
     setUploadTimestamp('');
     setErrors([]);
     setWarnings([]);
-    setCurrentStep('institution');
-    setSelectedInstitution(null);
+    setCurrentStep('projectType');
+    // Keep default institution
+    setSelectedInstitution('university');
     setSelectedProjectType(null);
   };
 

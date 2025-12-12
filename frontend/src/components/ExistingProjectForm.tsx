@@ -48,9 +48,7 @@ export function ExistingProjectForm({
 }: ExistingProjectFormProps) {
   const { t } = useLanguage();
 
-  const institutionName = institution === 'university' 
-    ? t('institution.university')
-    : t('institution.clinic');
+  const institutionName = `${t('institution.university')} / ${t('institution.clinic')}`;
 
   const totalFiles = categories.reduce((sum, cat) => sum + cat.files.length, 0);
 

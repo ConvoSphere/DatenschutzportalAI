@@ -1,7 +1,6 @@
 import { Upload, Mail, FileText, AlertCircle, Info, ArrowLeft } from 'lucide-react';
 import { FileUploadSection } from './FileUploadSection';
 import { ConfirmationPage } from './ConfirmationPage';
-import { InstitutionSelection } from './InstitutionSelection';
 import { ProjectTypeSelection } from './ProjectTypeSelection';
 import { ExistingProjectForm } from './ExistingProjectForm';
 import { LanguageSwitch } from './LanguageSwitch';
@@ -37,9 +36,7 @@ export function DataProtectionPortal() {
     setIsProspectiveStudy,
     
     // Handlers
-    handleInstitutionSelect,
     handleProjectTypeSelect,
-    handleBackToInstitution,
     handleBackToProjectType,
     handleFilesAdded,
     handleFileRemoved,
@@ -49,23 +46,14 @@ export function DataProtectionPortal() {
 
   const totalFiles = categories.reduce((sum, cat) => sum + cat.files.length, 0);
 
-  const institutionName = selectedInstitution === 'university' 
-    ? 'Universität Frankfurt' 
-    : selectedInstitution === 'clinic'
-    ? 'Universitätsklinikum Frankfurt'
-    : '';
+  // Institution name is now static/combined
+  const institutionName = `${t('institution.university')} / ${t('institution.clinic')}`;
 
   // Render different steps
-  if (currentStep === 'institution') {
-    return <InstitutionSelection onSelect={handleInstitutionSelect} />;
-  }
-
   if (currentStep === 'projectType') {
     return (
       <ProjectTypeSelection
-        institution={selectedInstitution!}
         onSelect={handleProjectTypeSelect}
-        onBack={handleBackToInstitution}
       />
     );
   }
@@ -93,6 +81,7 @@ export function DataProtectionPortal() {
       />
     );
   }
+
 
   // Wenn Upload erfolgreich war, zeige Bestätigungsseite
   if (showSuccess) {
