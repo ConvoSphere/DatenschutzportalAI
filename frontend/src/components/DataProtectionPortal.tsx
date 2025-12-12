@@ -253,8 +253,8 @@ export function DataProtectionPortal() {
           </div>
 
           {/* Dokumente Upload */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h2 className="text-gray-900 mb-4">{t('form.documents')}</h2>
+          <div className="bg-blue-50 rounded-lg shadow-sm border border-blue-200 p-6 mb-6">
+            <h2 className="text-blue-900 mb-4">{t('form.documents')}</h2>
             
             <div className="space-y-4">
               {categories.map((category) => {
