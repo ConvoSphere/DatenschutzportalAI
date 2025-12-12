@@ -2,6 +2,15 @@
 
 Das Backend basiert auf FastAPI und stellt Endpunkte für Dokumenten-Uploads, Projektmanagement und System-Health-Checks bereit.
 
+## Authentifizierung
+
+Die API ist durch Bearer Tokens geschützt. Der Token muss im Header jeder Anfrage (außer Health-Check) mitgesendet werden.
+
+**Header:**
+`Authorization: Bearer <Ihr-Token>`
+
+Der Token wird in der `.env` Datei (`API_TOKEN`) konfiguriert.
+
 ## Endpunkte
 
 ### Upload
@@ -9,6 +18,8 @@ Das Backend basiert auf FastAPI und stellt Endpunkte für Dokumenten-Uploads, Pr
 #### `POST /api/upload`
 
 Lädt Datenschutzdokumente in die Nextcloud hoch und löst Benachrichtigungen aus.
+
+**Authentifizierung:** Erforderlich
 
 **Parameter (Multipart/Form-Data):**
 
@@ -40,17 +51,40 @@ Lädt Datenschutzdokumente in die Nextcloud hoch und löst Benachrichtigungen au
 
 Ruft den Upload-Status und Metadaten für ein bestimmtes Projekt ab.
 
+**Authentifizierung:** Erforderlich
+
+**Parameter:**
+
+| Name | Typ | Beschreibung | Pflichtfeld |
+|------|------|-------------|:--------:|
+| `project_id` | string | Die ID des Projekts | Ja |
+
+**Antwort:**
+
+Gibt das Metadaten-Objekt des Projekts zurück.
+
 ### Projekte
 
-#### `GET /api/projects/`
+#### `GET /api/`
 
-Listet alle Projekte auf (Aktuell leere Liste).
+Listet alle Projekte auf.
+
+*Hinweis: Dieser Endpunkt gibt aktuell eine leere Liste zurück und dient als Platzhalter.*
+
+**Authentifizierung:** Nicht explizit definiert (Router-Level möglich)
+
+**Antwort:**
+```json
+[]
+```
 
 ### Health
 
 #### `GET /api/health`
 
 Health-Check Endpunkt.
+
+**Authentifizierung:** Nicht erforderlich
 
 **Antwort:**
 ```json
@@ -70,6 +104,7 @@ sequenceDiagram
 
     U->>A: POST /api/upload (Dateien + Metadaten)
     activate A
+    A->>A: Authentifizierung prüfen
     A->>A: Validiere Dateien (Größe, Typ)
     A->>N: Erstelle Projektordner
     
