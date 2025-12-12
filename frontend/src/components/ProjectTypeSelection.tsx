@@ -1,9 +1,10 @@
 import { FilePlus, FolderOpen, ArrowLeft } from 'lucide-react';
 import { LanguageSwitch } from './LanguageSwitch';
 import { useLanguage } from '../contexts/LanguageContext';
+import { Institution } from '../types';
 
 interface ProjectTypeSelectionProps {
-  institution: 'university' | 'clinic';
+  institution: Institution;
   onSelect: (type: 'new' | 'existing') => void;
   onBack: () => void;
 }

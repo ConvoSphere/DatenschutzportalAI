@@ -2,7 +2,7 @@
 
 ## Architektur-Übersicht
 
-Die Frontend-Architektur folgt einem **komponentenbasierten Ansatz** mit klarer Trennung von Verantwortlichkeiten und einem mehrstufigen Workflow-System.
+Die Frontend-Architektur folgt einem **komponentenbasierten Ansatz** mit klarer Trennung von Verantwortlichkeiten und einem mehrstufigen Workflow-System. Die Geschäftslogik ist von der UI getrennt.
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -17,15 +17,21 @@ Die Frontend-Architektur folgt einem **komponentenbasierten Ansatz** mit klarer 
                      │
         ┌────────────▼────────────────────┐
         │  DataProtectionPortal           │
-        │  (Main Component + Workflow)    │
+        │  (Main Component)               │
+        │  Uses: useDataProtectionWorkflow│
         └────────────┬────────────────────┘
                      │
-        ┌────────────┴────────────┐
-        │                         │
-   ┌────▼────────┐       ┌───────▼───────┐
-   │  Workflow   │       │  UI Components│
-   │ Components  │       │   (shadcn/ui) │
-   └─────────────┘       └───────────────┘
+        ┌────────────┼──────────────────────────────┐
+        │            │                              │
+   ┌────▼────────┐   │   ┌───────────────┐     ┌────▼──────────┐
+   │  Workflow   │   ├───►  Hooks        │     │  UI Components│
+   │ Components  │   │   │ (Logic)       │     │   (shadcn/ui) │
+   └─────────────┘   │   └───────┬───────┘     └───────────────┘
+                     │           │
+                     │    ┌──────▼───────┐
+                     │    │  Services    │
+                     │    │  (API/Mock)  │
+                     │    └──────────────┘
 ```
 
 ## Komponenten-Hierarchie
@@ -44,7 +50,9 @@ Die Frontend-Architektur folgt einem **komponentenbasierten Ansatz** mit klarer 
 
 ### DataProtectionPortal.tsx (Hauptkomponente)
 
-**Workflow-States**:
+Die Hauptkomponente delegiert die gesamte Logik an den Custom Hook `useDataProtectionWorkflow`.
+
+**Workflow-States (in Hook)**:
 ```typescript
 type WorkflowStep = 
   | 'institution'      // Schritt 1: Institution wählen
@@ -54,26 +62,36 @@ type WorkflowStep =
   | 'confirmation'     // Schritt 4: Bestätigung
 ```
 
+## Business Logic Separation (Hooks & Services)
+
+### useDataProtectionWorkflow (Hook)
+Verwaltet den gesamten State und die Validierungslogik.
+
 **State Management**:
 ```typescript
 // Workflow State
 const [currentStep, setCurrentStep] = useState<WorkflowStep>('institution');
 const [selectedInstitution, setSelectedInstitution] = useState<Institution>(null);
-const [selectedProjectType, setSelectedProjectType] = useState<ProjectType>(null);
 
 // Form State
 const [email, setEmail] = useState('');
-const [uploaderName, setUploaderName] = useState('');
-const [projectTitle, setProjectTitle] = useState('');
-const [isProspectiveStudy, setIsProspectiveStudy] = useState(false);
+// ... weitere Formular-Felder
 
-// Upload State
-const [categories, setCategories] = useState<FileCategory[]>([...]);
-const [isSubmitting, setIsSubmitting] = useState(false);
+// Actions
+const validateForm = () => { ... };
+const handleSubmit = async () => { ... };
+```
 
-// Feedback State
-const [errors, setErrors] = useState<string[]>([]);
-const [warnings, setWarnings] = useState<string[]>([]);
+### Services (API Layer)
+Die Kommunikation mit dem Backend (oder Mock) ist in Services gekapselt.
+
+**src/services/api.ts**:
+```typescript
+export const api = {
+  upload: async (data: UploadData): Promise<UploadResult> => {
+    // Mock Implementierung oder echter API Call
+  }
+};
 ```
 
 ## Workflow-Komponenten
@@ -120,6 +138,7 @@ interface ProjectTypeSelectionProps {
 **Props**:
 ```typescript
 interface ExistingProjectFormProps {
+  institution: Institution;
   onBack: () => void;
 }
 ```
@@ -186,21 +205,6 @@ interface UploadProgressProps {
 - Loading-Animation
 - Success-State
 
-**Progress Simulation**:
-```typescript
-useEffect(() => {
-  if (isUploading) {
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 95) return 95; // Wartet auf echten Upload
-        return prev + Math.random() * 10;
-      });
-    }, 200);
-    return () => clearInterval(interval);
-  }
-}, [isUploading]);
-```
-
 ### 6. PDFPreview.tsx
 
 **Zweck**: Modal-Preview für PDF-Dateien
@@ -241,7 +245,7 @@ interface ConfirmationPageProps {
   uploaderName: string;
   email: string;
   uploadTimestamp: string;
-  categories: FileCategory[];
+  uploadedFiles: Array<{ category: string; fileName: string }>;
   onNewUpload: () => void;
 }
 ```
@@ -279,7 +283,7 @@ interface LanguageContextType {
 const translations = {
   de: { /* 230+ Keys */ },
   en: { /* 230+ Keys */ }
-};
+}
 ```
 
 **Verwendung in Komponenten**:
@@ -351,11 +355,13 @@ Alle UI-Komponenten folgen dem **Composition Pattern**:
 ```
 User Input
     ↓
-Validation (validateForm)
+Validation (in useDataProtectionWorkflow)
     ↓
 setIsSubmitting(true)
     ↓
 <UploadProgress /> anzeigen
+    ↓
+Service Call (api.upload)
     ↓
 [TODO] API Call zu FastAPI
     ↓
@@ -368,63 +374,32 @@ setShowSuccess(true)
 <ConfirmationPage /> anzeigen
 ```
 
-### Aktuelle Mock-Implementierung
+### Aktuelle Mock-Implementierung (in api.ts)
 
 ```typescript
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  if (!validateForm()) return;
-  
-  setIsSubmitting(true);
-  
-  // Simuliert Upload (3 Sekunden)
-  await new Promise(resolve => setTimeout(resolve, 3000));
-  
-  setUploadTimestamp(new Date().toLocaleString('de-DE'));
-  setShowSuccess(true);
-  setIsSubmitting(false);
-  setCurrentStep('confirmation');
+export const api = {
+  upload: async (data: UploadData) => {
+    // Simuliert Upload (2 Sekunden)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    return { success: true, ... };
+  }
 };
 ```
 
 ## Validierungslogik
 
-### Form-Validierung
+### Form-Validierung (in Hook)
 
 ```typescript
 const validateForm = (): boolean => {
   const newErrors: string[] = [];
-  const newWarnings: string[] = [];
   
   // E-Mail Validierung
   if (!email.trim()) {
     newErrors.push(t('error.emailRequired'));
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    newErrors.push(t('error.emailInvalid'));
   }
   
-  // Projekttitel Validierung
-  if (!projectTitle.trim()) {
-    newErrors.push(t('error.titleRequired'));
-  }
-  
-  // Kategorien Validierung
-  categories.forEach(cat => {
-    if (cat.required && cat.files.length === 0) {
-      newErrors.push(`${t(`category.${cat.key}`)} ${t('error.categoryRequired')}`);
-    }
-    
-    // Conditional Required: Einwilligung bei prospektiver Studie
-    if (cat.key === 'einwilligung' && 
-        isProspectiveStudy && 
-        cat.files.length === 0) {
-      newWarnings.push(t('warning.einwilligungProspective'));
-    }
-  });
-  
-  setErrors(newErrors);
-  setWarnings(newWarnings);
+  // ... weitere Validierungen
   
   return newErrors.length === 0;
 };
@@ -437,25 +412,11 @@ const validateForm = (): boolean => {
 ```typescript
 interface FileCategory {
   key: string;              // Eindeutiger Identifier
-  label: string;            // Anzeigename (deprecated, nutzt i18n)
+  label: string;            // Anzeigename
   required: boolean;        // Pflichtfeld
   conditionalRequired?: boolean;  // Bedingt Pflicht
   files: File[];            // Hochgeladene Dateien
 }
-```
-
-### Kategorien-Definition
-
-```typescript
-const categories = [
-  { key: 'datenschutzkonzept', required: true },
-  { key: 'verantwortung', required: true },
-  { key: 'schulung_uni', required: true },
-  { key: 'schulung_ukf', required: true },
-  { key: 'einwilligung', required: false, conditionalRequired: true },
-  { key: 'ethikvotum', required: false },
-  { key: 'sonstiges', required: false }
-];
 ```
 
 ## Responsive Design
@@ -465,18 +426,6 @@ const categories = [
 - **Mobile First**: Base Styles für Mobile
 - **Tablet**: `md:` Prefix (768px+)
 - **Desktop**: `lg:` Prefix (1024px+)
-
-### Beispiel
-
-```tsx
-<div className="
-  grid 
-  grid-cols-1        // Mobile: 1 Spalte
-  md:grid-cols-2     // Tablet: 2 Spalten
-  lg:grid-cols-3     // Desktop: 3 Spalten
-  gap-4
-">
-```
 
 ## Barrierefreiheit (A11y)
 
@@ -488,17 +437,6 @@ const categories = [
 - **Focus States**: Sichtbare Focus-Ringe
 - **Screen Reader Support**: Radix UI Primitives
 
-### Beispiel
-
-```tsx
-<button
-  aria-label={t('upload.close')}
-  onClick={onClose}
->
-  <X className="w-5 h-5" />
-</button>
-```
-
 ## Performance-Optimierungen
 
 ### Implementiert
@@ -506,6 +444,7 @@ const categories = [
 - **useRef** für File Input: Vermeidet Re-Renders
 - **Functional Components**: Leichtgewichtig
 - **Lazy State Updates**: Batch-Updates
+- **Hooks Separation**: Bessere Performance durch Logik-Trennung
 
 ### Geplant
 
@@ -520,17 +459,7 @@ const categories = [
 1. **Client-Validation**: Sofortiges Feedback
 2. **Error State**: `errors` und `warnings` Arrays
 3. **Visual Feedback**: Alert-Komponenten
-4. **Backend Errors** (geplant): Try-Catch mit Toast
-
-```typescript
-try {
-  const response = await uploadFiles();
-  // Success
-} catch (error) {
-  setErrors([t('error.uploadFailed')]);
-  console.error('Upload failed:', error);
-}
-```
+4. **Backend Errors** (via Service): Try-Catch mit Error Message Mapping
 
 ## Zukünftige Erweiterungen
 

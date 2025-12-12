@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Search, ArrowLeft, AlertCircle } from 'lucide-react';
 import { LanguageSwitch } from './LanguageSwitch';
 import { useLanguage } from '../contexts/LanguageContext';
+import { Institution } from '../types';
 
 interface ExistingProjectFormProps {
-  institution: 'university' | 'clinic';
+  institution: Institution;
   onBack: () => void;
 }
 

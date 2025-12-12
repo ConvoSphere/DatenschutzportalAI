@@ -1,9 +1,10 @@
 import { Building2, Hospital } from 'lucide-react';
 import { LanguageSwitch } from './LanguageSwitch';
 import { useLanguage } from '../contexts/LanguageContext';
+import { Institution } from '../types';
 
 interface InstitutionSelectionProps {
-  onSelect: (institution: 'university' | 'clinic') => void;
+  onSelect: (institution: Institution) => void;
 }
 
 export function InstitutionSelection({ onSelect }: InstitutionSelectionProps) {

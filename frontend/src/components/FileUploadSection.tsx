@@ -2,14 +2,7 @@ import { useRef, useState } from 'react';
 import { Upload, X, FileText, FileArchive, Eye } from 'lucide-react';
 import { PDFPreview } from './PDFPreview';
 import { useLanguage } from '../contexts/LanguageContext';
-
-interface FileCategory {
-  key: string;
-  label: string;
-  required: boolean;
-  conditionalRequired?: boolean;
-  files: File[];
-}
+import { FileCategory } from '../types';
 
 interface FileUploadSectionProps {
   category: FileCategory;
