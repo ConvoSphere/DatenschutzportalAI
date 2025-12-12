@@ -28,12 +28,6 @@ class Settings(BaseSettings):
     smtp_from_name: str = "Datenschutzportal"
     smtp_encryption: Literal["starttls", "ssl", "none"] = "starttls"
     
-    # IMAP
-    imap_host: str
-    imap_port: int = 993
-    imap_user: str
-    imap_password: str
-    
     # Notifications
     notification_emails: List[str]
     
