@@ -1,4 +1,5 @@
 import { CheckCircle2, Mail, FileText, Calendar, User, ArrowLeft } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface ConfirmationPageProps {
   email: string;
@@ -17,6 +18,10 @@ export function ConfirmationPage({
   uploadTimestamp,
   onNewUpload,
 }: ConfirmationPageProps) {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
     return date.toLocaleString('de-DE', {
