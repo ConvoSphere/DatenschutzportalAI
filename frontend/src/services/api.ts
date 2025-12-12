@@ -24,10 +24,23 @@ const API_TOKEN = import.meta.env.VITE_API_TOKEN;
 
 export const api = {
   upload: async (data: UploadData): Promise<UploadResult> => {
+    console.log('[API] Starting upload request', {
+      email: data.email,
+      projectTitle: data.projectTitle,
+      institution: data.institution,
+      projectType: data.projectType,
+      totalFiles: data.categories.reduce((sum, cat) => sum + cat.files.length, 0)
+    });
+
     // Basic validation before even trying
     if (!API_TOKEN) {
-      console.error('API_TOKEN is missing in environment variables');
+      console.error('[API] API_TOKEN is missing in environment variables');
       throw new Error('Konfigurationsfehler: API Token fehlt. Bitte kontaktieren Sie den Administrator.');
+    }
+
+    if (!API_BASE_URL) {
+      console.error('[API] API_BASE_URL is missing in environment variables');
+      throw new Error('Konfigurationsfehler: API URL fehlt. Bitte kontaktieren Sie den Administrator.');
     }
 
     const formData = new FormData();
@@ -47,6 +60,7 @@ export const api = {
 
     // Process files and categories
     const categoryMap: Record<string, string> = {};
+    let totalFileSize = 0;
 
     data.categories.forEach((category) => {
       category.files.forEach((file) => {
@@ -82,18 +96,27 @@ export const api = {
         if (prefix) {
           const newName = prefix + file.name;
           fileToUpload = new File([file], newName, { type: file.type });
+          console.log(`[API] Renamed file: ${file.name} -> ${newName}`);
         }
 
         formData.append('files', fileToUpload);
         categoryMap[fileToUpload.name] = category.key;
+        totalFileSize += fileToUpload.size;
+        console.log(`[API] Added file to FormData: ${fileToUpload.name} (${fileToUpload.size} bytes, category: ${category.key})`);
       });
     });
 
     // Add category mapping
     formData.append('file_categories', JSON.stringify(categoryMap));
+    console.log('[API] File categories mapping:', categoryMap);
+    console.log(`[API] Total upload size: ${(totalFileSize / 1024 / 1024).toFixed(2)} MB`);
+
+    const uploadUrl = `${API_BASE_URL}/upload`;
+    console.log(`[API] Sending request to: ${uploadUrl}`);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/upload`, {
+      const startTime = Date.now();
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_TOKEN}`,
@@ -101,16 +124,42 @@ export const api = {
         body: formData,
       });
 
+      const duration = Date.now() - startTime;
+      console.log(`[API] Response received after ${duration}ms`, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
       if (!response.ok) {
+        let errorMessage = `Upload fehlgeschlagen (Status ${response.status})`;
+        
         if (response.status === 401 || response.status === 403) {
-          throw new Error('Authentifizierung fehlgeschlagen. Bitte überprüfen Sie das API-Token.');
+          errorMessage = 'Authentifizierung fehlgeschlagen. Bitte überprüfen Sie das API-Token.';
+          console.error('[API] Authentication failed', {
+            status: response.status,
+            statusText: response.statusText
+          });
+        } else {
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.detail || errorMessage;
+            console.error('[API] Upload failed with error response:', errorData);
+          } catch (parseError) {
+            const text = await response.text().catch(() => 'Unable to read error response');
+            console.error('[API] Upload failed, unable to parse error response:', {
+              status: response.status,
+              statusText: response.statusText,
+              responseText: text.substring(0, 500) // Limit log size
+            });
+          }
         }
         
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Upload fehlgeschlagen (Status ${response.status})`);
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
+      console.log('[API] Upload successful:', result);
       
       return {
         success: result.success,
@@ -120,7 +169,15 @@ export const api = {
         message: result.message,
       };
     } catch (error) {
-      console.error('Upload error:', error);
+      if (error instanceof Error) {
+        console.error('[API] Upload error:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        });
+      } else {
+        console.error('[API] Upload error (unknown type):', error);
+      }
       // Re-throw with user-friendly message if possible, or pass through
       throw error;
     }

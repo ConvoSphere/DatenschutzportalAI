@@ -114,10 +114,21 @@ export function useDataProtectionWorkflow() {
     e.preventDefault();
 
     if (!validateForm()) {
+      console.warn('[Workflow] Form validation failed');
       return;
     }
 
+    console.log('[Workflow] Starting form submission', {
+      email,
+      projectTitle,
+      institution: selectedInstitution,
+      projectType: selectedProjectType,
+      categoriesCount: categories.length,
+      totalFiles: categories.reduce((sum, cat) => sum + cat.files.length, 0)
+    });
+
     setIsSubmitting(true);
+    setErrors([]);
 
     try {
       const result = await api.upload({
@@ -131,14 +142,39 @@ export function useDataProtectionWorkflow() {
         projectType: selectedProjectType
       });
 
+      console.log('[Workflow] Upload completed successfully:', result);
+
       if (result.success) {
         setUploadTimestamp(result.timestamp);
         setShowSuccess(true);
+      } else {
+        console.warn('[Workflow] Upload returned success=false:', result);
+        setErrors([result.message || 'Upload wurde nicht erfolgreich abgeschlossen.']);
       }
     } catch (error) {
-      setErrors(['Ein Fehler ist beim Upload aufgetreten. Bitte versuchen Sie es erneut.']);
+      let errorMessage = 'Ein Fehler ist beim Upload aufgetreten. Bitte versuchen Sie es erneut.';
+      
+      if (error instanceof Error) {
+        console.error('[Workflow] Upload error:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        });
+        
+        // Use the error message if it's user-friendly
+        if (error.message && !error.message.includes('Failed to fetch') && !error.message.includes('NetworkError')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          errorMessage = 'Verbindungsfehler: Die Verbindung zum Server konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Internetverbindung.';
+        }
+      } else {
+        console.error('[Workflow] Upload error (unknown type):', error);
+      }
+      
+      setErrors([errorMessage]);
     } finally {
       setIsSubmitting(false);
+      console.log('[Workflow] Form submission finished');
     }
   };
 

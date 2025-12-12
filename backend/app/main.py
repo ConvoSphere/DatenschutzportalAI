@@ -2,12 +2,27 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import upload, projects, health
+import logging
+import sys
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG if settings.api_debug else logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Datenschutzportal API",
     description="API für Datenschutz-Dokument Upload",
     version="1.0.0"
 )
+
+logger.info("Starting Datenschutzportal API")
 
 # CORS Middleware
 app.add_middleware(
