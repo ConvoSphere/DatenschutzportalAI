@@ -60,7 +60,8 @@ Zeigt eine Zusammenfassung der hochgeladenen Dateien und Projektdetails nach erf
 ## State Management
 
 - **Context API**: `LanguageContext` wird für die Verwaltung der Internationalisierung verwendet.
-- **Lokaler State**: Der meiste Workflow-State wird innerhalb von `DataProtectionPortal` verwaltet und als Props weitergegeben.
+- **Custom Hook**: Der gesamte Workflow-Status (Formulardaten, aktueller Schritt, Validierung) wird durch den Custom Hook `useDataProtectionWorkflow` verwaltet. Dieser trennt die Logik von der UI-Darstellung in `DataProtectionPortal`.
+- **Lokaler State**: UI-spezifischer State (z.B. für Modals) verbleibt in den jeweiligen Komponenten.
 
 ## Styling
 

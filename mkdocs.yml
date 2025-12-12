@@ -57,6 +57,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Datenschutz: datenschutz.md
   - Backend:
     - Setup: backend/setup.md
     - API: backend/api.md

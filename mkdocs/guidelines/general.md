@@ -10,7 +10,29 @@ TIP: More context isn't always better. It can confuse the LLM. Try and add the m
 
 # General guidelines
 
+## Coding Standards & Rules
+
+The following rules must be followed for this project:
+
+1.  **Language**:
+    *   **Source Code**: Comments and internal documentation within the code must be in **English**.
+    *   **External Documentation (MkDocs)**: User and developer documentation in this folder is in **German**.
+
+2.  **Style & Tone**:
+    *   Do **not** use emojis or icons in communication or documentation unless explicitly requested.
+
+3.  **Architecture**:
+    *   **Modularization**: Keep code modular. Use libraries where appropriate instead of reinventing the wheel.
+    *   Refactor code regularly to keep functions small and focused.
+
+4.  **Version Control**:
+    *   Create regular commits.
+    *   Use descriptive commit messages.
+
+## General guidelines
+
 Any general rules you want the AI to follow.
+
 For example:
 
 * Only use absolute positioning when necessary. Opt for responsive and well structured layouts that use flexbox and grid by default
