@@ -127,7 +127,8 @@ export function useDataProtectionWorkflow() {
         projectDetails,
         institution: selectedInstitution || 'university',
         isProspectiveStudy,
-        categories
+        categories,
+        projectType: selectedProjectType
       });
 
       if (result.success) {

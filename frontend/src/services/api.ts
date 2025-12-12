@@ -8,6 +8,7 @@ export interface UploadData {
   isProspectiveStudy: boolean;
   projectDetails?: string;
   categories: FileCategory[];
+  projectType: 'new' | 'existing' | null;
 }
 
 export interface UploadResult {
@@ -42,6 +43,7 @@ export const api = {
     if (data.projectDetails) {
       formData.append('project_details', data.projectDetails);
     }
+    formData.append('project_type', data.projectType || 'new');
 
     // Process files and categories
     const categoryMap: Record<string, string> = {};

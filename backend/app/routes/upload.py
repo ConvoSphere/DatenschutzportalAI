@@ -9,6 +9,7 @@ import uuid
 from datetime import datetime
 import os
 import json
+import re
 
 router = APIRouter()
 nextcloud = NextcloudService()
@@ -23,14 +24,32 @@ async def upload_documents(
     is_prospective_study: bool = Form(False),
     project_details: str = Form(None),
     files: List[UploadFile] = File(...),
-    file_categories: str = Form(None)
+    file_categories: str = Form(None),
+    project_type: str = Form("new")
 ):
     """
     Upload data protection documents to Nextcloud
     """
     try:
-        # Generate unique Project ID
-        project_id = f"PRJ-{datetime.now().year}-{str(uuid.uuid4())[:8].upper()}"
+        # Sanitize project title for folder name
+        # Replace non-alphanumeric characters (except spaces, dashes, underscores) with underscore
+        safe_title = re.sub(r'[^a-zA-Z0-9 \-_]', '_', project_title)
+        # Replace spaces with underscores
+        safe_title = safe_title.replace(' ', '_')
+        # Remove multiple underscores
+        safe_title = re.sub(r'_+', '_', safe_title)
+        # Trim underscores
+        safe_title = safe_title.strip('_')
+        
+        date_str = datetime.now().strftime('%Y-%m-%d')
+        
+        if project_type == 'existing':
+            folder_name = f"RE_{safe_title}_{date_str}"
+        else:
+            folder_name = f"{safe_title}_{date_str}"
+            
+        # Use folder_name as project_id for consistency with storage
+        project_id = folder_name
         
         # Parse categories if provided
         categories_map = {}
@@ -86,7 +105,8 @@ async def upload_documents(
             "institution": institution,
             "is_prospective_study": is_prospective_study,
             "upload_timestamp": datetime.now().isoformat(),
-            "files": uploaded_files
+            "files": uploaded_files,
+            "project_type": project_type
         }
         
         await nextcloud.upload_metadata(metadata, f"{project_path}/metadata.json")
@@ -96,6 +116,7 @@ async def upload_documents(
 
 **Projekt-ID:** {project_id}
 **Datum:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
+**Typ:** {'Nachreichung' if project_type == 'existing' else 'Neueinreichung'}
 
 ## Kontaktinformationen
 - **Name:** {uploader_name if uploader_name else 'Nicht angegeben'}

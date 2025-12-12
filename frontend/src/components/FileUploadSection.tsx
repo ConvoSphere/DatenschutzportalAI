@@ -92,7 +92,7 @@ export function FileUploadSection({
           onChange={handleFileChange}
           className="hidden"
           multiple
-          accept=".pdf,.doc,.docx,.zip,.png,.jpg,.jpeg"
+          accept=".pdf,.doc,.docx,.zip,.png,.jpg,.jpeg,.odt,.ods,.odp"
         />
       </div>
 
