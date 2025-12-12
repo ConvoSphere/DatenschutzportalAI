@@ -90,6 +90,28 @@ async def upload_documents(
         }
         
         await nextcloud.upload_metadata(metadata, f"{project_path}/metadata.json")
+
+        # Create README.md
+        readme_content = f"""# {project_title}
+
+**Projekt-ID:** {project_id}
+**Datum:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
+
+## Kontaktinformationen
+- **Name:** {uploader_name if uploader_name else 'Nicht angegeben'}
+- **E-Mail:** {email}
+- **Institution:** {institution}
+
+## Projektdetails
+{project_details if project_details else 'Keine weiteren Details angegeben.'}
+
+## Hochgeladene Dateien
+"""
+        
+        for file_info in uploaded_files:
+            readme_content += f"- **{file_info['category']}:** {file_info['filename']}\n"
+
+        await nextcloud.upload_content(readme_content, f"{project_path}/README.md")
         
         # Send confirmation email to user
         await email_service.send_confirmation_email(
