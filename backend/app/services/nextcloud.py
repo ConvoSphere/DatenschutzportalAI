@@ -171,26 +171,24 @@ class NextcloudService:
         tmp_path = None
         try:
             logger.debug(f"Retrieving metadata for project: {project_id}")
-            # Search in both university and clinic folders
-            for institution in ['university', 'clinic']:
-                path = f"{settings.nextcloud_base_path}/{institution}/{project_id}/metadata.json"
-                if self.client.check(path):
-                    logger.debug(f"Found metadata at: {path}")
-                    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-                        tmp_path = tmp_file.name
-                    
-                    self.client.download_sync(remote_path=path, local_path=tmp_path)
-                    
-                    with open(tmp_path, 'r') as f:
-                        metadata = json.load(f)
-                    
-                    if tmp_path and os.path.exists(tmp_path):
-                        os.unlink(tmp_path)
-                    
-                    logger.info(f"Successfully retrieved metadata for project: {project_id}")
-                    return metadata
+            path = f"{settings.nextcloud_base_path}/{project_id}/metadata.json"
+            if self.client.check(path):
+                logger.debug(f"Found metadata at: {path}")
+                with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+                    tmp_path = tmp_file.name
+                
+                self.client.download_sync(remote_path=path, local_path=tmp_path)
+                
+                with open(tmp_path, 'r') as f:
+                    metadata = json.load(f)
+                
+                if tmp_path and os.path.exists(tmp_path):
+                    os.unlink(tmp_path)
+                
+                logger.info(f"Successfully retrieved metadata for project: {project_id}")
+                return metadata
             
-            logger.warning(f"Project {project_id} not found in any institution folder")
+            logger.warning(f"Project {project_id} not found")
             raise FileNotFoundError(f"Project {project_id} not found")
         except FileNotFoundError:
             raise

@@ -89,7 +89,7 @@ async def upload_documents(
         logger.info("File validation passed")
         
         # Create project folder structure
-        project_path = f"{settings.nextcloud_base_path}/{institution}/{project_id}"
+        project_path = f"{settings.nextcloud_base_path}/{project_id}"
         logger.info(f"Creating project folder: {project_path}")
         
         # Test connection before attempting folder creation
