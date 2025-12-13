@@ -22,6 +22,16 @@ export interface UploadResult {
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 const API_TOKEN = import.meta.env.VITE_API_TOKEN;
 
+export class ApiError extends Error {
+  public readonly i18nKey: string;
+
+  constructor(i18nKey: string) {
+    super(i18nKey);
+    this.name = 'ApiError';
+    this.i18nKey = i18nKey;
+  }
+}
+
 export const api = {
   upload: async (data: UploadData): Promise<UploadResult> => {
     console.log('[API] Starting upload request', {
@@ -35,12 +45,12 @@ export const api = {
     // Basic validation before even trying
     if (!API_TOKEN) {
       console.error('[API] API_TOKEN is missing in environment variables');
-      throw new Error('Konfigurationsfehler: API Token fehlt. Bitte kontaktieren Sie den Administrator.');
+      throw new ApiError('error.configMissingToken');
     }
 
     if (!API_BASE_URL) {
       console.error('[API] API_BASE_URL is missing in environment variables');
-      throw new Error('Konfigurationsfehler: API URL fehlt. Bitte kontaktieren Sie den Administrator.');
+      throw new ApiError('error.configMissingApiUrl');
     }
 
     const formData = new FormData();
@@ -132,18 +142,15 @@ export const api = {
       });
 
       if (!response.ok) {
-        let errorMessage = `Upload fehlgeschlagen (Status ${response.status})`;
-        
         if (response.status === 401 || response.status === 403) {
-          errorMessage = 'Authentifizierung fehlgeschlagen. Bitte überprüfen Sie das API-Token.';
           console.error('[API] Authentication failed', {
             status: response.status,
             statusText: response.statusText
           });
+          throw new ApiError('error.authFailed');
         } else {
           try {
             const errorData = await response.json();
-            errorMessage = errorData.detail || errorMessage;
             console.error('[API] Upload failed with error response:', errorData);
           } catch (parseError) {
             const text = await response.text().catch(() => 'Unable to read error response');
@@ -153,9 +160,8 @@ export const api = {
               responseText: text.substring(0, 500) // Limit log size
             });
           }
+          throw new ApiError('error.uploadFailed');
         }
-        
-        throw new Error(errorMessage);
       }
 
       const result = await response.json();

@@ -130,7 +130,7 @@ export function FileUploadSection({
                   type="button"
                   onClick={() => onFileRemoved(index)}
                   className="p-1 hover:bg-gray-200 rounded transition-colors"
-                  aria-label="Remove file"
+                  aria-label={t('common.removeFile')}
                 >
                   <X className="w-5 h-5 text-gray-600" />
                 </button>

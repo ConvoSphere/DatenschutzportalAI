@@ -97,13 +97,13 @@ export function DataProtectionPortal() {
   }
 
 
-  // Wenn Upload erfolgreich war, zeige Bestätigungsseite
+  // If the upload was successful, show the confirmation page
   if (showSuccess) {
     const uploadedFiles = categories
       .filter(cat => cat.files.length > 0)
       .flatMap(cat =>
         cat.files.map(file => ({
-          category: cat.label,
+          categoryKey: cat.key,
           fileName: file.name,
         }))
       );
@@ -311,7 +311,7 @@ export function DataProtectionPortal() {
               <div className="flex gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-yellow-900 mb-2">Warnungen:</p>
+                  <p className="text-yellow-900 mb-2">{t('common.warnings')}</p>
                   <ul className="list-disc list-inside space-y-1">
                     {warnings.map((warning, index) => (
                       <li key={index} className="text-yellow-800">{warning}</li>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { FileCategory, Institution, ProjectType, WorkflowStep } from '../types';
-import { api } from '../services/api';
+import { api, ApiError } from '../services/api';
 
 export function useDataProtectionWorkflow() {
   const { t } = useLanguage();
@@ -24,13 +24,14 @@ export function useDataProtectionWorkflow() {
   const [warnings, setWarnings] = useState<string[]>([]);
 
   const [categories, setCategories] = useState<FileCategory[]>([
-    { key: 'datenschutzkonzept', label: 'Datenschutzkonzept', required: true, files: [] },
-    { key: 'verantwortung', label: 'Übernahme der Verantwortung', required: true, files: [] },
-    { key: 'schulung_uni', label: 'Schulung Uni Nachweis', required: true, files: [] },
-    { key: 'schulung_ukf', label: 'Schulung UKF Nachweis', required: true, files: [] },
-    { key: 'einwilligung', label: 'Einwilligung', required: false, conditionalRequired: true, files: [] },
-    { key: 'ethikvotum', label: 'Ethikvotum', required: false, files: [] },
-    { key: 'sonstiges', label: 'Sonstiges', required: false, files: [] },
+    // Store a stable label value; UI text is always derived via i18n keys.
+    { key: 'datenschutzkonzept', label: 'datenschutzkonzept', required: true, files: [] },
+    { key: 'verantwortung', label: 'verantwortung', required: true, files: [] },
+    { key: 'schulung_uni', label: 'schulung_uni', required: true, files: [] },
+    { key: 'schulung_ukf', label: 'schulung_ukf', required: true, files: [] },
+    { key: 'einwilligung', label: 'einwilligung', required: false, conditionalRequired: true, files: [] },
+    { key: 'ethikvotum', label: 'ethikvotum', required: false, files: [] },
+    { key: 'sonstiges', label: 'sonstiges', required: false, files: [] },
   ]);
 
   // Workflow handlers
@@ -84,23 +85,23 @@ export function useDataProtectionWorkflow() {
     const newErrors: string[] = [];
     const newWarnings: string[] = [];
 
-    // Pflichtfelder prüfen
+    // Validate required fields
     if (!email.trim()) {
-      newErrors.push('E-Mail-Adresse ist erforderlich');
+      newErrors.push(t('error.emailRequired'));
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.push('Bitte geben Sie eine gültige E-Mail-Adresse ein');
+      newErrors.push(t('error.emailInvalid'));
     }
 
     if (!projectTitle.trim()) {
-      newErrors.push('Projekttitel ist erforderlich');
+      newErrors.push(t('error.titleRequired'));
     }
 
-    // Kategorien prüfen
+    // Validate file categories
     categories.forEach(cat => {
       const isRequired = cat.required || (cat.conditionalRequired && isProspectiveStudy);
       
       if (isRequired && cat.files.length === 0) {
-        newErrors.push(`${cat.label} ist ein Pflichtfeld`);
+        newErrors.push(`${t(`category.${cat.key}`)} ${t('error.categoryRequired')}`);
       }
     });
 
@@ -149,10 +150,10 @@ export function useDataProtectionWorkflow() {
         setShowSuccess(true);
       } else {
         console.warn('[Workflow] Upload returned success=false:', result);
-        setErrors([result.message || 'Upload wurde nicht erfolgreich abgeschlossen.']);
+        setErrors([result.message || t('error.uploadNotSuccessful')]);
       }
     } catch (error) {
-      let errorMessage = 'Ein Fehler ist beim Upload aufgetreten. Bitte versuchen Sie es erneut.';
+      let errorMessage = t('error.uploadFailed');
       
       if (error instanceof Error) {
         console.error('[Workflow] Upload error:', {
@@ -160,12 +161,14 @@ export function useDataProtectionWorkflow() {
           name: error.name,
           stack: error.stack
         });
-        
-        // Use the error message if it's user-friendly
-        if (error.message && !error.message.includes('Failed to fetch') && !error.message.includes('NetworkError')) {
-          errorMessage = error.message;
+
+        if (error instanceof ApiError) {
+          errorMessage = t(error.i18nKey);
         } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-          errorMessage = 'Verbindungsfehler: Die Verbindung zum Server konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Internetverbindung.';
+          errorMessage = t('error.network');
+        } else if (error.message) {
+          // Fallback: show the error message if provided (e.g., unexpected runtime errors).
+          errorMessage = error.message;
         }
       } else {
         console.error('[Workflow] Upload error (unknown type):', error);

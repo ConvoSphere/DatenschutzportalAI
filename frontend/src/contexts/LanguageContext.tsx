@@ -122,6 +122,11 @@ const translations = {
     'error.categoryRequired': 'ist ein Pflichtfeld',
     'error.uploadFailed': 'Ein Fehler ist beim Upload aufgetreten. Bitte versuchen Sie es erneut.',
     'error.legalRequired': 'Bitte bestätigen Sie die rechtskonforme Nutzung der Daten.',
+    'error.uploadNotSuccessful': 'Upload wurde nicht erfolgreich abgeschlossen.',
+    'error.network': 'Verbindungsfehler: Die Verbindung zum Server konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Internetverbindung.',
+    'error.authFailed': 'Authentifizierung fehlgeschlagen. Bitte überprüfen Sie das API-Token.',
+    'error.configMissingToken': 'Konfigurationsfehler: API Token fehlt. Bitte kontaktieren Sie den Administrator.',
+    'error.configMissingApiUrl': 'Konfigurationsfehler: API URL fehlt. Bitte kontaktieren Sie den Administrator.',
     
     // Submit
     'submit.filesReady': 'bereit zum Upload',
@@ -145,6 +150,7 @@ const translations = {
     'confirmation.emailSent': 'Eine Bestätigungs-E-Mail wurde an {email} gesendet mit allen Details zu Ihrem Upload.',
     'confirmation.teamNotified': 'Das Datenschutz-Team wurde ebenfalls über Ihren Upload informiert und wird Ihre Dokumente zeitnah prüfen.',
     'confirmation.nextSteps': 'Wie geht es weiter?',
+    'confirmation.keepEmailProof': 'Bitte bewahren Sie die Bestätigungs-E-Mail als Nachweis auf',
     'confirmation.step1': 'Das Datenschutz-Team prüft Ihre hochgeladenen Dokumente',
     'confirmation.step2': 'Bei Rückfragen werden Sie per E-Mail kontaktiert',
     'confirmation.step3': 'Nach erfolgreicher Prüfung erhalten Sie eine Freigabe',
@@ -154,6 +160,17 @@ const translations = {
     
     // Common
     'common.back': 'Zurück',
+    'common.warnings': 'Warnungen:',
+    'common.removeFile': 'Datei entfernen',
+    'common.download': 'Herunterladen',
+    'common.zoomIn': 'Vergrößern',
+    'common.zoomOut': 'Verkleinern',
+
+    // PDF Preview
+    'pdfPreview.pdfCannotBeDisplayed': 'PDF kann nicht angezeigt werden.',
+    'pdfPreview.downloadPdf': 'PDF herunterladen',
+    'pdfPreview.previewOnlyPdf': 'Vorschau nur für PDF-Dateien verfügbar.',
+    'pdfPreview.downloadFile': 'Datei herunterladen',
   },
   en: {
     // Institution Selection
@@ -268,6 +285,11 @@ const translations = {
     'error.categoryRequired': 'is a required field',
     'error.uploadFailed': 'An error occurred during upload. Please try again.',
     'error.legalRequired': 'Please confirm the legally compliant use of the data.',
+    'error.uploadNotSuccessful': 'Upload was not completed successfully.',
+    'error.network': 'Connection error: Unable to reach the server. Please check your internet connection.',
+    'error.authFailed': 'Authentication failed. Please check the API token.',
+    'error.configMissingToken': 'Configuration error: API token is missing. Please contact the administrator.',
+    'error.configMissingApiUrl': 'Configuration error: API URL is missing. Please contact the administrator.',
     
     // Submit
     'submit.filesReady': 'ready for upload',
@@ -291,6 +313,7 @@ const translations = {
     'confirmation.emailSent': 'A confirmation email was sent to {email} with all details about your upload.',
     'confirmation.teamNotified': 'The Data Protection Team has also been informed about your upload and will review your documents promptly.',
     'confirmation.nextSteps': 'What happens next?',
+    'confirmation.keepEmailProof': 'Please keep the confirmation email as proof',
     'confirmation.step1': 'The Data Protection Team reviews your uploaded documents',
     'confirmation.step2': 'You will be contacted by email if there are any questions',
     'confirmation.step3': 'You will receive approval after successful review',
@@ -300,6 +323,17 @@ const translations = {
     
     // Common
     'common.back': 'Back',
+    'common.warnings': 'Warnings:',
+    'common.removeFile': 'Remove file',
+    'common.download': 'Download',
+    'common.zoomIn': 'Zoom in',
+    'common.zoomOut': 'Zoom out',
+
+    // PDF Preview
+    'pdfPreview.pdfCannotBeDisplayed': 'Unable to display PDF.',
+    'pdfPreview.downloadPdf': 'Download PDF',
+    'pdfPreview.previewOnlyPdf': 'Preview is only available for PDF files.',
+    'pdfPreview.downloadFile': 'Download file',
   },
 };
 

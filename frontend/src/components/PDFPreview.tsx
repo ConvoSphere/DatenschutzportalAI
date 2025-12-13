@@ -45,7 +45,7 @@ export function PDFPreview({ file, onClose }: PDFPreviewProps) {
             <button
               onClick={handleZoomOut}
               className="p-2 hover:bg-gray-100 rounded transition-colors"
-              aria-label="Zoom out"
+              aria-label={t('common.zoomOut')}
             >
               <ZoomOut className="w-5 h-5 text-gray-600" />
             </button>
@@ -53,7 +53,7 @@ export function PDFPreview({ file, onClose }: PDFPreviewProps) {
             <button
               onClick={handleZoomIn}
               className="p-2 hover:bg-gray-100 rounded transition-colors"
-              aria-label="Zoom in"
+              aria-label={t('common.zoomIn')}
             >
               <ZoomIn className="w-5 h-5 text-gray-600" />
             </button>
@@ -64,7 +64,7 @@ export function PDFPreview({ file, onClose }: PDFPreviewProps) {
             <button
               onClick={handleDownload}
               className="p-2 hover:bg-gray-100 rounded transition-colors"
-              aria-label="Download"
+              aria-label={t('common.download')}
             >
               <Download className="w-5 h-5 text-gray-600" />
             </button>
@@ -97,26 +97,26 @@ export function PDFPreview({ file, onClose }: PDFPreviewProps) {
               >
                 <div className="p-8 text-center">
                   <p className="text-gray-600 mb-4">
-                    PDF kann nicht angezeigt werden.
+                    {t('pdfPreview.pdfCannotBeDisplayed')}
                   </p>
                   <button
                     onClick={handleDownload}
                     className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
                   >
-                    PDF herunterladen
+                    {t('pdfPreview.downloadPdf')}
                   </button>
                 </div>
               </object>
             ) : (
               <div className="p-8 text-center">
                 <p className="text-gray-600 mb-4">
-                  Vorschau nur für PDF-Dateien verfügbar.
+                  {t('pdfPreview.previewOnlyPdf')}
                 </p>
                 <button
                   onClick={handleDownload}
                   className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
                 >
-                  Datei herunterladen
+                  {t('pdfPreview.downloadFile')}
                 </button>
               </div>
             )}

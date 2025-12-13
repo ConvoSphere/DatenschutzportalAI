@@ -1,11 +1,12 @@
 import { CheckCircle2, Mail, FileText, Calendar, User, ArrowLeft } from 'lucide-react';
 import { useEffect } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ConfirmationPageProps {
   email: string;
   uploaderName: string;
   projectTitle: string;
-  uploadedFiles: Array<{ category: string; fileName: string }>;
+  uploadedFiles: Array<{ categoryKey: string; fileName: string }>;
   uploadTimestamp: string;
   onNewUpload: () => void;
 }
@@ -22,9 +23,12 @@ export function ConfirmationPage({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  const { t, language } = useLanguage();
+
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleString('de-DE', {
+    const locale = language === 'de' ? 'de-DE' : 'en-US';
+    return date.toLocaleString(locale, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -42,23 +46,22 @@ export function ConfirmationPage({
             <CheckCircle2 className="w-12 h-12 text-green-600" />
           </div>
           
-          <h1 className="text-gray-900 mb-2">Upload erfolgreich abgeschlossen!</h1>
+          <h1 className="text-gray-900 mb-2">{t('confirmation.success')}</h1>
           
           <p className="text-gray-600 max-w-xl mx-auto">
-            Ihre Dokumente wurden erfolgreich hochgeladen und in der Nextcloud gespeichert. 
-            Eine Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse versendet.
+            {t('confirmation.message')}
           </p>
         </div>
 
         {/* Upload Details */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-gray-900 mb-4">Upload-Details</h2>
+          <h2 className="text-gray-900 mb-4">{t('confirmation.details')}</h2>
           
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <FileText className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-gray-500 text-sm">Projekttitel</p>
+                <p className="text-gray-500 text-sm">{t('confirmation.projectTitle')}</p>
                 <p className="text-gray-900">{projectTitle}</p>
               </div>
             </div>
@@ -67,7 +70,7 @@ export function ConfirmationPage({
               <div className="flex items-start gap-3">
                 <User className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-gray-500 text-sm">Uploader</p>
+                  <p className="text-gray-500 text-sm">{t('confirmation.uploader')}</p>
                   <p className="text-gray-900">{uploaderName}</p>
                 </div>
               </div>
@@ -76,7 +79,7 @@ export function ConfirmationPage({
             <div className="flex items-start gap-3">
               <Mail className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-gray-500 text-sm">E-Mail-Adresse</p>
+                <p className="text-gray-500 text-sm">{t('confirmation.email')}</p>
                 <p className="text-gray-900 break-all">{email}</p>
               </div>
             </div>
@@ -84,7 +87,7 @@ export function ConfirmationPage({
             <div className="flex items-start gap-3">
               <Calendar className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-gray-500 text-sm">Upload-Zeitpunkt</p>
+                <p className="text-gray-500 text-sm">{t('confirmation.timestamp')}</p>
                 <p className="text-gray-900">{formatDate(uploadTimestamp)}</p>
               </div>
             </div>
@@ -94,7 +97,7 @@ export function ConfirmationPage({
         {/* Uploaded Files */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <h2 className="text-gray-900 mb-4">
-            Hochgeladene Dokumente ({uploadedFiles.length})
+            {t('confirmation.documents')} ({uploadedFiles.length})
           </h2>
           
           <div className="space-y-2">
@@ -106,7 +109,7 @@ export function ConfirmationPage({
                 <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-gray-900 truncate">{file.fileName}</p>
-                  <p className="text-gray-500 text-sm">{file.category}</p>
+                  <p className="text-gray-500 text-sm">{t(`category.${file.categoryKey}`)}</p>
                 </div>
               </div>
             ))}
@@ -118,14 +121,12 @@ export function ConfirmationPage({
           <div className="flex gap-3">
             <Mail className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h3 className="text-blue-900 mb-2">E-Mail-Benachrichtigung</h3>
+              <h3 className="text-blue-900 mb-2">{t('confirmation.emailNotification')}</h3>
               <p className="text-blue-800 mb-3">
-                Eine Bestätigungs-E-Mail wurde an <span className="break-all">{email}</span> gesendet 
-                mit allen Details zu Ihrem Upload.
+                {t('confirmation.emailSent', { email })}
               </p>
               <p className="text-blue-700 text-sm">
-                Das Datenschutz-Team wurde ebenfalls über Ihren Upload informiert und wird 
-                Ihre Dokumente zeitnah prüfen.
+                {t('confirmation.teamNotified')}
               </p>
             </div>
           </div>
@@ -133,23 +134,23 @@ export function ConfirmationPage({
 
         {/* Next Steps */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h3 className="text-gray-900 mb-3">Wie geht es weiter?</h3>
+          <h3 className="text-gray-900 mb-3">{t('confirmation.nextSteps')}</h3>
           <ul className="space-y-2 text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-blue-600 mt-1">•</span>
-              <span>Bitte bewahren Sie die Bestätigungs-E-Mail als Nachweis auf</span>
+              <span>{t('confirmation.keepEmailProof')}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-600 mt-1">•</span>
-              <span>Das Datenschutz-Team prüft Ihre hochgeladenen Dokumente</span>
+              <span>{t('confirmation.step1')}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-600 mt-1">•</span>
-              <span>Bei Rückfragen werden Sie per E-Mail kontaktiert</span>
+              <span>{t('confirmation.step2')}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-600 mt-1">•</span>
-              <span>Nach erfolgreicher Prüfung erhalten Sie eine Freigabe</span>
+              <span>{t('confirmation.step3')}</span>
             </li>
           </ul>
         </div>
@@ -161,14 +162,14 @@ export function ConfirmationPage({
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>Weiteren Upload durchführen</span>
+            <span>{t('confirmation.newUpload')}</span>
           </button>
         </div>
 
         {/* Footer Info */}
         <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>Bei Fragen wenden Sie sich bitte an das Datenschutz-Team</p>
-          <p>Universität Frankfurt / Universitätsklinik</p>
+          <p>{t('confirmation.footer')}</p>
+          <p>{t('confirmation.institution')}</p>
         </div>
       </div>
     </div>
