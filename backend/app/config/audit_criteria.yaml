@@ -1,10 +1,12 @@
 system_prompt: |
-  Du bist ein erfahrener Datenschutz-Auditor. Deine Aufgabe ist es, Datenschutzdokumente (VVT, TOMs, Konzepte, etc.) zu analysieren und auf Vollständigkeit und Plausibilität zu prüfen.
+  Du bist ein erfahrener Datenschutz-Auditor im medizinischen Forschungsumfeld. Deine Aufgabe ist es, Datenschutzdokumente (VVT, TOMs, Konzepte, Studienprotokolle, Patienteninformationen) zu analysieren und auf Vollständigkeit und Plausibilität zu prüfen.
   
   Analysiere die bereitgestellten Texte aus den Dokumenten.
   Prüfe jeden Punkt der Checkliste sorgfältig.
   
   Berücksichtige dabei:
+  - Fokus auf medizinische Forschung und klinische Studien.
+  - Umgang mit Patientendaten (Art. 9 DSGVO).
   - Die Dokumente können in Deutsch oder Englisch sein.
   - Es kann sich um PDFs, Word-Dokumente oder Excel-Tabellen handeln.
   - Sei kritisch, aber konstruktiv.
@@ -13,38 +15,63 @@ system_prompt: |
   Wenn Widersprüche bestehen, hebe diese hervor.
 
 check_items:
+  # --- Allgemeine Dokumente ---
   - id: general_completeness
     category: General
-    description: Sind alle notwendigen Dokumente vorhanden (VVT, Datenschutzkonzept, TOMs)?
+    description: Sind alle notwendigen Dokumente vorhanden (VVT, Datenschutzkonzept, TOMs, Patienteninformation/Einwilligung)?
 
+  # --- VVT & Rechtsgrundlagen ---
   - id: vvt_legal_basis
     category: VVT
-    description: Ist für jede Verarbeitungstätigkeit eine Rechtsgrundlage angegeben (z.B. Art. 6 DSGVO)?
+    description: Ist für jede Verarbeitungstätigkeit eine Rechtsgrundlage angegeben (z.B. Art. 6 i.V.m. Art. 9 DSGVO, LDSG, spezielle Forschungsgesetze)?
 
   - id: vvt_purpose
     category: VVT
-    description: Ist der Zweck der Datenverarbeitung klar definiert?
+    description: Ist der Forschungszweck der Datenverarbeitung klar und spezifisch definiert?
 
   - id: vvt_deletion
     category: VVT
-    description: Sind Löschfristen definiert?
-
-  - id: toms_encryption
-    category: TOMs
-    description: Werden Verschlüsselungsmaßnahmen erwähnt?
-
-  - id: toms_access_control
-    category: TOMs
-    description: Gibt es Regelungen zur Zugriffskontrolle?
+    description: Sind konkrete Löschfristen definiert (z.B. 10 Jahre nach Studienende)?
 
   - id: ropa_completeness
     category: ROPA
-    description: Enthält das Verzeichnis von Verarbeitungstätigkeiten (VVT/ROPA) Angaben zu Verantwortlichen und Empfängern?
+    description: Enthält das Verzeichnis Angaben zu Verantwortlichen, Empfängern und Drittlandtransfers?
 
+  # --- TOMs & Sicherheit ---
+  - id: toms_encryption
+    category: TOMs
+    description: Werden Verschlüsselungsmaßnahmen (Storage & Transport) explizit erwähnt?
+
+  - id: toms_access_control
+    category: TOMs
+    description: Gibt es ein restriktives Berechtigungskonzept (Zugriff nur für Studienpersonal)?
+
+  # --- Medizin & Forschungsspezifika ---
+  - id: med_consent
+    category: Medical Research
+    description: Liegt eine Patienteninformation und Einwilligungserklärung (Informed Consent) vor? Ist der Widerruf geregelt?
+
+  - id: med_data_separation
+    category: Medical Research
+    description: Wird die Trennung von Identifikationsdaten (IDAT) und medizinischen Daten (MDAT) beschrieben? Gibt es eine Treuhandstelle/TTP?
+
+  - id: med_pseudonymization
+    category: Medical Research
+    description: Wird ein Pseudonymisierungskonzept beschrieben? Wer verwaltet die Schlüsselliste?
+
+  - id: med_ethics
+    category: Medical Research
+    description: Wird ein Votum der Ethikkommission erwähnt oder liegt dieses vor?
+
+  - id: med_sensitive_data
+    category: Medical Research
+    description: Werden besondere Schutzmaßnahmen für Art. 9 Daten (Gesundheitsdaten, genetische Daten) beschrieben?
+
+  - id: med_secondary_use
+    category: Medical Research
+    description: Falls eine Weiterverwendung von Daten geplant ist (Secondary Use): Ist dies in der Einwilligung abgedeckt?
+
+  # --- Konsistenz ---
   - id: consistency
     category: Consistency
-    description: Widersprechen sich Angaben in verschiedenen Dokumenten (z.B. unterschiedliche Speicherfristen)?
-
-  - id: sensitive_data
-    category: Sensitive Data
-    description: Werden besondere Kategorien personenbezogener Daten (Art. 9 DSGVO) verarbeitet und sind entsprechende Schutzmaßnahmen erwähnt?
+    description: Widersprechen sich Angaben in verschiedenen Dokumenten (z.B. Speicherfristen in VVT vs. Patienteninfo)?
