@@ -1,9 +1,11 @@
+import React from 'react';
 import { Upload, Mail, FileText, AlertCircle, Info, ArrowLeft, ExternalLink } from 'lucide-react';
 import { FileUploadSection } from './FileUploadSection';
 import { ConfirmationPage } from './ConfirmationPage';
 import { ProjectTypeSelection } from './ProjectTypeSelection';
 import { ExistingProjectForm } from './ExistingProjectForm';
 import { LanguageSwitch } from './LanguageSwitch';
+import { PortalLogos } from './PortalLogos';
 import { UploadProgress } from './UploadProgress';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useDataProtectionWorkflow } from '../hooks/useDataProtectionWorkflow';
@@ -120,8 +122,9 @@ export function DataProtectionPortal() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Language Switch */}
-        <div className="flex justify-end mb-6">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between mb-6">
+          <PortalLogos />
           <LanguageSwitch />
         </div>
 
@@ -256,13 +259,14 @@ export function DataProtectionPortal() {
                 const isRequired = category.required || (category.conditionalRequired && isProspectiveStudy);
                 
                 return (
-                  <FileUploadSection
-                    key={category.key}
-                    category={category}
-                    isRequired={isRequired}
-                    onFilesAdded={(files) => handleFilesAdded(category.key, files)}
-                    onFileRemoved={(index) => handleFileRemoved(category.key, index)}
-                  />
+                  <div key={category.key}>
+                    <FileUploadSection
+                      category={category}
+                      isRequired={isRequired}
+                      onFilesAdded={(files) => handleFilesAdded(category.key, files)}
+                      onFileRemoved={(index) => handleFileRemoved(category.key, index)}
+                    />
+                  </div>
                 );
               })}
             </div>

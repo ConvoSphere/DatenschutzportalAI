@@ -1,5 +1,7 @@
+import React from 'react';
 import { ArrowLeft, AlertCircle, Upload, Mail, Info, ExternalLink } from 'lucide-react';
 import { LanguageSwitch } from './LanguageSwitch';
+import { PortalLogos } from './PortalLogos';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Institution, FileCategory } from '../types';
 import { FileUploadSection } from './FileUploadSection';
@@ -66,8 +68,9 @@ export function ExistingProjectForm({
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Language Switch */}
-        <div className="flex justify-end mb-6">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between mb-6">
+          <PortalLogos />
           <LanguageSwitch />
         </div>
 

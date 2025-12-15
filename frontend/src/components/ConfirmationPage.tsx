@@ -1,6 +1,8 @@
+import React from 'react';
 import { CheckCircle2, Mail, FileText, Calendar, User, ArrowLeft } from 'lucide-react';
 import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { PortalLogos } from './PortalLogos';
 
 interface ConfirmationPageProps {
   email: string;
@@ -40,6 +42,11 @@ export function ConfirmationPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-8 px-4">
       <div className="max-w-3xl mx-auto">
+        {/* Top Bar */}
+        <div className="flex items-center justify-start mb-6">
+          <PortalLogos />
+        </div>
+
         {/* Success Header */}
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8 mb-6 text-center">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
