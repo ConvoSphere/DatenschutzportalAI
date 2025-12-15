@@ -4,11 +4,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from app.config import settings
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Literal
 from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
+
+ProjectType = Literal["new", "existing"]
 
 class EmailService:
     def __init__(self):
@@ -96,12 +98,22 @@ class EmailService:
         project_id: str,
         project_title: str,
         uploader_name: str,
-        files: List[Dict]
+        files: List[Dict],
+        project_type: ProjectType = "new",
     ) -> bool:
         """
-        Send confirmation email to user
+        Send confirmation email to user.
+        For resubmissions (existing projects), we use a dedicated template/subject with the same base layout.
         """
-        subject = f"Bestätigung Upload: {project_title} (ID: {project_id})"
+        is_resubmission = project_type == "existing"
+        subject_prefix = "Bestätigung Nachreichung" if is_resubmission else "Bestätigung Upload"
+        subject = f"{subject_prefix}: {project_title} (ID: {project_id})"
+
+        template_name = (
+            "email_confirmation_resubmission_de.html"
+            if is_resubmission
+            else "email_confirmation_de.html"
+        )
         
         context = {
             "project_id": project_id,
@@ -109,13 +121,14 @@ class EmailService:
             "uploader_name": uploader_name,
             "files": files,
             "files_count": len(files),
-            "timestamp": datetime.now().strftime("%d.%m.%Y %H:%M")
+            "timestamp": datetime.now().strftime("%d.%m.%Y %H:%M"),
+            "project_type": project_type,
         }
         
         return await self.send_template_email(
             to_email,
             subject,
-            "email_confirmation_de.html",
+            template_name,
             context
         )
     

@@ -12,9 +12,11 @@ async def test_upload_documents():
          patch("app.routes.upload.email_service") as mock_email:
         
         # Setup mocks to be awaitable
+        mock_nextcloud.test_connection = MagicMock(return_value=(True, "Connection successful"))
         mock_nextcloud.create_folder = MagicMock(return_value=True) # create_folder is sync in my impl
         mock_nextcloud.upload_file = AsyncMock(return_value=True)
         mock_nextcloud.upload_metadata = AsyncMock(return_value=True)
+        mock_nextcloud.upload_content = AsyncMock(return_value=True)
         mock_nextcloud.get_metadata = AsyncMock(return_value={})
         
         mock_email.send_confirmation_email = AsyncMock(return_value=True)

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Nachreichung Bestätigung - {{ project_title }}{% endblock %}
+
+{% block content %}
+<h2>Nachreichung erfolgreich</h2>
+<p>Sehr geehrte(r) {{ uploader_name or 'Nutzer' }},</p>
+<p>vielen Dank für Ihre Nachreichung. Ihre zusätzlichen Unterlagen wurden erfolgreich entgegengenommen und sicher in der Nextcloud gespeichert.</p>
+
+<div class="info-box">
+    <table class="metadata-table">
+        <tr>
+            <td>Projekt-ID</td>
+            <td><strong>{{ project_id }}</strong></td>
+        </tr>
+        <tr>
+            <td>Projekttitel</td>
+            <td>{{ project_title }}</td>
+        </tr>
+        <tr>
+            <td>Zeitpunkt</td>
+            <td>{{ timestamp or 'Gerade eben' }}</td>
+        </tr>
+        <tr>
+            <td>Vorgang</td>
+            <td><strong>Nachreichung</strong></td>
+        </tr>
+    </table>
+</div>
+
+<h3>Hochgeladene Dateien</h3>
+<ul>
+    {% for file in files %}
+    <li>
+        <strong>{{ file.filename }}</strong><br>
+        <span style="font-size: 13px; color: #6b7280;">Kategorie: {{ file.category }}</span>
+    </li>
+    {% endfor %}
+</ul>
+
+<h3>Weitere Hinweise</h3>
+<p>Das Datenschutz-Team wird die nachgereichten Unterlagen zeitnah prüfen. Sollten noch Rückfragen bestehen oder weitere Unterlagen benötigt werden, melden wir uns bei Ihnen.</p>
+
+<p>
+    <strong>Wichtig:</strong> Bitte bewahren Sie diese E-Mail als Nachweis für Ihre Nachreichung auf.
+    Bei Rückfragen geben Sie bitte immer Ihre Projekt-ID ({{ project_id }}) an.
+</p>
+{% endblock %}
+

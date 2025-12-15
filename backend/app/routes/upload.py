@@ -185,7 +185,8 @@ async def upload_documents(
                 project_id=project_id,
                 project_title=project_title,
                 uploader_name=uploader_name,
-                files=uploaded_files
+                files=uploaded_files,
+                project_type=project_type
             )
             logger.info("Confirmation email sent successfully")
         except Exception as e:

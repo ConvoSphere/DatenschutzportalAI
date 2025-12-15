@@ -60,6 +60,29 @@ export function DataProtectionPortal() {
     originalHandleSubmit(e);
   };
 
+  // If the upload was successful, show the confirmation page (for both new + existing flows)
+  if (showSuccess) {
+    const uploadedFiles = categories
+      .filter(cat => cat.files.length > 0)
+      .flatMap(cat =>
+        cat.files.map(file => ({
+          categoryKey: cat.key,
+          fileName: file.name,
+        }))
+      );
+
+    return (
+      <ConfirmationPage
+        email={email}
+        uploaderName={uploaderName}
+        projectTitle={projectTitle}
+        uploadedFiles={uploadedFiles}
+        uploadTimestamp={uploadTimestamp}
+        onNewUpload={handleNewUpload}
+      />
+    );
+  }
+
   // Render different steps
   if (currentStep === 'projectType') {
     return (
@@ -89,30 +112,6 @@ export function DataProtectionPortal() {
         isSubmitting={isSubmitting}
         errors={errors}
         warnings={warnings}
-      />
-    );
-  }
-
-
-  // If the upload was successful, show the confirmation page
-  if (showSuccess) {
-    const uploadedFiles = categories
-      .filter(cat => cat.files.length > 0)
-      .flatMap(cat =>
-        cat.files.map(file => ({
-          categoryKey: cat.key,
-          fileName: file.name,
-        }))
-      );
-
-    return (
-      <ConfirmationPage
-        email={email}
-        uploaderName={uploaderName}
-        projectTitle={projectTitle}
-        uploadedFiles={uploadedFiles}
-        uploadTimestamp={uploadTimestamp}
-        onNewUpload={handleNewUpload}
       />
     );
   }
