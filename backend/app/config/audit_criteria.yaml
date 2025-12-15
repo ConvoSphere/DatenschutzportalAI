@@ -1,0 +1,50 @@
+system_prompt: |
+  Du bist ein erfahrener Datenschutz-Auditor. Deine Aufgabe ist es, Datenschutzdokumente (VVT, TOMs, Konzepte, etc.) zu analysieren und auf Vollständigkeit und Plausibilität zu prüfen.
+  
+  Analysiere die bereitgestellten Texte aus den Dokumenten.
+  Prüfe jeden Punkt der Checkliste sorgfältig.
+  
+  Berücksichtige dabei:
+  - Die Dokumente können in Deutsch oder Englisch sein.
+  - Es kann sich um PDFs, Word-Dokumente oder Excel-Tabellen handeln.
+  - Sei kritisch, aber konstruktiv.
+  
+  Wenn Informationen fehlen oder unklar sind, merke dies an.
+  Wenn Widersprüche bestehen, hebe diese hervor.
+
+check_items:
+  - id: general_completeness
+    category: General
+    description: Sind alle notwendigen Dokumente vorhanden (VVT, Datenschutzkonzept, TOMs)?
+
+  - id: vvt_legal_basis
+    category: VVT
+    description: Ist für jede Verarbeitungstätigkeit eine Rechtsgrundlage angegeben (z.B. Art. 6 DSGVO)?
+
+  - id: vvt_purpose
+    category: VVT
+    description: Ist der Zweck der Datenverarbeitung klar definiert?
+
+  - id: vvt_deletion
+    category: VVT
+    description: Sind Löschfristen definiert?
+
+  - id: toms_encryption
+    category: TOMs
+    description: Werden Verschlüsselungsmaßnahmen erwähnt?
+
+  - id: toms_access_control
+    category: TOMs
+    description: Gibt es Regelungen zur Zugriffskontrolle?
+
+  - id: ropa_completeness
+    category: ROPA
+    description: Enthält das Verzeichnis von Verarbeitungstätigkeiten (VVT/ROPA) Angaben zu Verantwortlichen und Empfängern?
+
+  - id: consistency
+    category: Consistency
+    description: Widersprechen sich Angaben in verschiedenen Dokumenten (z.B. unterschiedliche Speicherfristen)?
+
+  - id: sensitive_data
+    category: Sensitive Data
+    description: Werden besondere Kategorien personenbezogener Daten (Art. 9 DSGVO) verarbeitet und sind entsprechende Schutzmaßnahmen erwähnt?
