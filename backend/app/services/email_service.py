@@ -188,17 +188,33 @@ class EmailService:
         project_title: str,
         uploader_email: str,
         file_names: Sequence[str],
+        audit_summary: str = None,
+        audit_status: str = None
     ) -> bool:
         """
         Send notification to data protection team
         """
         subject = f"Neuer Dokument-Upload: {project_title} (ID: {project_id})"
+        if audit_status:
+            subject += f" [{audit_status}]"
 
         folder_url = self._build_nextcloud_web_ui_folder_url(
             folder_path=f"{settings.nextcloud_base_path}/{project_id}"
         )
         files_html = "\n".join(f"<li>{name}</li>" for name in file_names)
         
+        audit_section = ""
+        if audit_summary:
+            audit_section = f"""
+            <h3>Automatische KI-Prüfung</h3>
+            <p><strong>Ergebnis:</strong> {audit_status}</p>
+            <p><strong>Zusammenfassung:</strong></p>
+            <div style="background-color: #f5f5f5; padding: 10px; border-left: 4px solid #333; margin: 10px 0;">
+                {audit_summary.replace(chr(10), '<br>')}
+            </div>
+            <p><em>Der vollständige Bericht (AUDIT_REPORT.md) liegt im Projektordner.</em></p>
+            """
+
         # We can also use a template for this eventually
         html_content = f"""
         <html>
@@ -207,11 +223,14 @@ class EmailService:
             <p><strong>Projekt-ID:</strong> {project_id}</p>
             <p><strong>Projekttitel:</strong> {project_title}</p>
             <p><strong>Uploader E-Mail:</strong> {uploader_email}</p>
+            
+            {audit_section}
+            
             <p><strong>Dateien:</strong></p>
             <ul>
                 {files_html}
             </ul>
-            <p><a href="{folder_url}">Open folder in Nextcloud</a></p>
+            <p><a href="{folder_url}">Ordner in Nextcloud öffnen</a></p>
         </body>
         </html>
         """

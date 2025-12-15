@@ -38,8 +38,13 @@ class Settings(BaseSettings):
     
     # File Upload
     max_file_size: int = 52428800  # 50 MB
-    allowed_file_types: List[str] = [".pdf", ".doc", ".docx", ".zip", ".odt", ".ods", ".odp", ".png", ".jpg", ".jpeg"]
+    allowed_file_types: List[str] = [".pdf", ".doc", ".docx", ".zip", ".odt", ".ods", ".odp", ".png", ".jpg", ".jpeg", ".xlsx", ".xls"]
     
+    # AI Audit
+    ai_api_base_url: str = "https://api.openai.com/v1"
+    ai_api_key: str
+    ai_model_name: str = "gpt-4-turbo-preview"
+
     class Config:
         env_file = ".env"
 

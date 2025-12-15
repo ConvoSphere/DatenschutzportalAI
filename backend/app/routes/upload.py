@@ -1,7 +1,8 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, BackgroundTasks
 from typing import List
 from app.services.nextcloud import NextcloudService
 from app.services.email_service import EmailService
+from app.services.ai_audit import AIAuditService
 from app.models.upload import UploadResponse
 from app.config import settings
 from app.utils.auth import verify_token
@@ -10,15 +11,94 @@ import os
 import json
 import re
 import logging
+import tempfile
+import shutil
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 nextcloud = NextcloudService()
 email_service = EmailService()
+ai_service = AIAuditService()
+
+async def perform_audit_and_notify(
+    project_id: str,
+    project_title: str,
+    email: str,
+    file_names: List[str]
+):
+    """
+    Background task to perform AI audit and notify the team.
+    """
+    logger.info(f"Starting background audit for project {project_id}")
+    temp_dir = tempfile.mkdtemp()
+    try:
+        # Download files
+        local_file_paths = []
+        for filename in file_names:
+            remote_path = f"{settings.nextcloud_base_path}/{project_id}/{filename}"
+            local_path = os.path.join(temp_dir, filename)
+            
+            try:
+                # We access the webdav client directly for download
+                nextcloud.client.download_sync(remote_path=remote_path, local_path=local_path)
+                local_file_paths.append(local_path)
+            except Exception as e:
+                logger.error(f"Failed to download {filename} for audit: {e}")
+
+        if not local_file_paths:
+            raise Exception("No files could be downloaded for audit")
+
+        # Perform Audit
+        audit_result = await ai_service.perform_audit(project_id, local_file_paths)
+        
+        # Generate Report
+        report_filename = "AUDIT_REPORT.md"
+        report_path = os.path.join(temp_dir, report_filename)
+        await ai_service.generate_report(audit_result, report_path)
+        
+        # Upload Report
+        # Read the report content to upload using existing service method
+        with open(report_path, 'r', encoding='utf-8') as f:
+            report_content = f.read()
+        
+        remote_report_path = f"{settings.nextcloud_base_path}/{project_id}/{report_filename}"
+        await nextcloud.upload_content(report_content, remote_report_path)
+        
+        # Send Team Notification
+        await email_service.send_team_notification(
+            project_id=project_id,
+            project_title=project_title,
+            uploader_email=email,
+            file_names=file_names,
+            audit_summary=audit_result.summary,
+            audit_status=audit_result.overall_status
+        )
+        
+    except Exception as e:
+        logger.error(f"Error in background audit task: {e}", exc_info=True)
+        # Notify team about the error
+        try:
+            await email_service.send_team_notification(
+                project_id=project_id,
+                project_title=project_title,
+                uploader_email=email,
+                file_names=file_names,
+                audit_summary=f"Automatischer Audit fehlgeschlagen: {str(e)}",
+                audit_status="ERROR"
+            )
+        except Exception as notify_error:
+            logger.error(f"Failed to send error notification: {notify_error}")
+            pass
+            
+    finally:
+        # Cleanup
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
 
 @router.post("/upload", response_model=UploadResponse, dependencies=[Depends(verify_token)])
 async def upload_documents(
+    background_tasks: BackgroundTasks,
     email: str = Form(...),
     uploader_name: str = Form(None),
     project_title: str = Form(...),
@@ -193,27 +273,22 @@ async def upload_documents(
             logger.error(f"Failed to send confirmation email: {e}", exc_info=True)
             # Don't fail the upload if email fails
         
-        # Send notification to team
-        logger.info("Sending team notification...")
-        try:
-            await email_service.send_team_notification(
-                project_id=project_id,
-                project_title=project_title,
-                uploader_email=email,
-                file_names=[f["filename"] for f in uploaded_files],
-            )
-            logger.info("Team notification sent successfully")
-        except Exception as e:
-            logger.error(f"Failed to send team notification: {e}", exc_info=True)
-            # Don't fail the upload if email fails
+        # Trigger background audit and team notification
+        background_tasks.add_task(
+            perform_audit_and_notify,
+            project_id=project_id,
+            project_title=project_title,
+            email=email,
+            file_names=[f["filename"] for f in uploaded_files]
+        )
         
-        logger.info(f"Upload completed successfully for project: {project_id}")
+        logger.info(f"Upload completed successfully for project: {project_id}. Background audit triggered.")
         return UploadResponse(
             success=True,
             project_id=project_id,
             timestamp=datetime.now(),
             files_uploaded=len(files),
-            message="Documents uploaded successfully"
+            message="Documents uploaded successfully. Audit and team notification will follow."
         )
         
     except HTTPException:
