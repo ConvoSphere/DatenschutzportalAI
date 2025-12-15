@@ -4,9 +4,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from app.config import settings
-from typing import List, Dict, Any, Literal
+from typing import List, Dict, Any, Literal, Sequence
 from datetime import datetime
 import logging
+from urllib.parse import quote, urlsplit
 
 logger = logging.getLogger(__name__)
 
@@ -186,13 +187,17 @@ class EmailService:
         project_id: str,
         project_title: str,
         uploader_email: str,
-        institution: str,
-        files_count: int
+        file_names: Sequence[str],
     ) -> bool:
         """
         Send notification to data protection team
         """
-        subject = f"Neuer Upload: {project_title} ({institution})"
+        subject = f"Neuer Dokument-Upload: {project_title} (ID: {project_id})"
+
+        folder_url = self._build_nextcloud_web_ui_folder_url(
+            folder_path=f"{settings.nextcloud_base_path}/{project_id}"
+        )
+        files_html = "\n".join(f"<li>{name}</li>" for name in file_names)
         
         # We can also use a template for this eventually
         html_content = f"""
@@ -201,10 +206,12 @@ class EmailService:
             <h2>Neuer Dokument-Upload</h2>
             <p><strong>Projekt-ID:</strong> {project_id}</p>
             <p><strong>Projekttitel:</strong> {project_title}</p>
-            <p><strong>Institution:</strong> {institution}</p>
             <p><strong>Uploader E-Mail:</strong> {uploader_email}</p>
-            <p><strong>Anzahl Dateien:</strong> {files_count}</p>
-            <p><a href="{settings.nextcloud_url}">Zur Nextcloud</a></p>
+            <p><strong>Dateien:</strong></p>
+            <ul>
+                {files_html}
+            </ul>
+            <p><a href="{folder_url}">Open folder in Nextcloud</a></p>
         </body>
         </html>
         """
@@ -214,3 +221,18 @@ class EmailService:
             await self.send_email(email, subject, html_content)
         
         return True
+
+    @staticmethod
+    def _build_nextcloud_web_ui_folder_url(folder_path: str) -> str:
+        """
+        Build a Nextcloud Web UI URL for a folder. This ensures we link to the normal UI and not a WebDAV endpoint.
+
+        The base is derived from NEXTCLOUD_URL, which is often configured as a WebDAV/DAV endpoint like:
+        - https://example.com/remote.php/webdav/
+        - https://example.com/remote.php/dav/files/<user>
+        """
+        url = str(settings.nextcloud_url).strip()
+        parts = urlsplit(url)
+        base = f"{parts.scheme}://{parts.netloc}" if parts.scheme and parts.netloc else url.rstrip("/")
+        normalized_folder = folder_path if folder_path.startswith("/") else f"/{folder_path}"
+        return f"{base}/index.php/apps/files/?dir={quote(normalized_folder, safe='')}"

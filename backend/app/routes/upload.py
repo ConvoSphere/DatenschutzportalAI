@@ -200,8 +200,7 @@ async def upload_documents(
                 project_id=project_id,
                 project_title=project_title,
                 uploader_email=email,
-                institution=institution,
-                files_count=len(files)
+                file_names=[f["filename"] for f in uploaded_files],
             )
             logger.info("Team notification sent successfully")
         except Exception as e:
