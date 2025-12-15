@@ -69,7 +69,7 @@ check_items:
 
   - id: med_secondary_use
     category: Medical Research
-    description: Falls eine Weiterverwendung von Daten geplant ist (Secondary Use): Ist dies in der Einwilligung abgedeckt?
+    description: "Falls eine Weiterverwendung von Daten geplant ist (Secondary Use): Ist dies in der Einwilligung abgedeckt?"
 
   # --- Konsistenz ---
   - id: consistency

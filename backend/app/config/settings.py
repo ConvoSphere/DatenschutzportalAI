@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import List, Literal
+from typing import List, Literal, Optional
 
 class Settings(BaseSettings):
     # API
@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     ai_api_base_url: str = "https://api.openai.com/v1"
     ai_api_key: str
     ai_model_name: str = "gpt-4-turbo-preview"
-    ai_proxy: str = None
+    ai_proxy: Optional[str] = None
 
     class Config:
         env_file = ".env"
