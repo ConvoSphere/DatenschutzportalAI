@@ -18,60 +18,137 @@ check_items:
   # --- Allgemeine Dokumente ---
   - id: general_completeness
     category: General
-    description: Sind alle notwendigen Dokumente vorhanden (VVT, Datenschutzkonzept, TOMs, Patienteninformation/Einwilligung)?
+    description: "Sind alle notwendigen Dokumente vorhanden (VVT, Datenschutzkonzept, TOMs, Patienteninformation/Einwilligung)?"
 
   # --- VVT & Rechtsgrundlagen ---
   - id: vvt_legal_basis
     category: VVT
-    description: Ist für jede Verarbeitungstätigkeit eine Rechtsgrundlage angegeben (z.B. Art. 6 i.V.m. Art. 9 DSGVO, LDSG, spezielle Forschungsgesetze)?
+    description: "Ist für jede Verarbeitungstätigkeit eine Rechtsgrundlage angegeben (z.B. Art. 6 i.V.m. Art. 9 DSGVO, LDSG, spezielle Forschungsgesetze)?"
 
   - id: vvt_purpose
     category: VVT
-    description: Ist der Forschungszweck der Datenverarbeitung klar und spezifisch definiert?
+    description: "Ist der Forschungszweck der Datenverarbeitung klar und spezifisch definiert?"
 
   - id: vvt_deletion
     category: VVT
-    description: Sind konkrete Löschfristen definiert (z.B. 10 Jahre nach Studienende)?
+    description: "Sind konkrete Löschfristen definiert (z.B. 10 Jahre nach Studienende)?"
 
   - id: ropa_completeness
     category: ROPA
-    description: Enthält das Verzeichnis Angaben zu Verantwortlichen, Empfängern und Drittlandtransfers?
+    description: "Enthält das Verzeichnis Angaben zu Verantwortlichen, Empfängern und Drittlandtransfers?"
 
   # --- TOMs & Sicherheit ---
   - id: toms_encryption
     category: TOMs
-    description: Werden Verschlüsselungsmaßnahmen (Storage & Transport) explizit erwähnt?
+    description: "Werden Verschlüsselungsmaßnahmen (Storage & Transport) explizit erwähnt?"
 
   - id: toms_access_control
     category: TOMs
-    description: Gibt es ein restriktives Berechtigungskonzept (Zugriff nur für Studienpersonal)?
+    description: "Gibt es ein restriktives Berechtigungskonzept (Zugriff nur für Studienpersonal)?"
 
   # --- Medizin & Forschungsspezifika ---
   - id: med_consent
     category: Medical Research
-    description: Liegt eine Patienteninformation und Einwilligungserklärung (Informed Consent) vor? Ist der Widerruf geregelt?
+    description: "Liegt eine Patienteninformation und Einwilligungserklärung (Informed Consent) vor? Ist der Widerruf geregelt?"
 
   - id: med_data_separation
     category: Medical Research
-    description: Wird die Trennung von Identifikationsdaten (IDAT) und medizinischen Daten (MDAT) beschrieben? Gibt es eine Treuhandstelle/TTP?
+    description: "Wird die Trennung von Identifikationsdaten (IDAT) und medizinischen Daten (MDAT) beschrieben? Gibt es eine Treuhandstelle/TTP?"
 
   - id: med_pseudonymization
     category: Medical Research
-    description: Wird ein Pseudonymisierungskonzept beschrieben? Wer verwaltet die Schlüsselliste?
+    description: "Wird ein Pseudonymisierungskonzept beschrieben? Wer verwaltet die Schlüsselliste?"
 
   - id: med_ethics
     category: Medical Research
-    description: Wird ein Votum der Ethikkommission erwähnt oder liegt dieses vor?
+    description: "Wird ein Votum der Ethikkommission erwähnt oder liegt dieses vor?"
 
   - id: med_sensitive_data
     category: Medical Research
-    description: Werden besondere Schutzmaßnahmen für Art. 9 Daten (Gesundheitsdaten, genetische Daten) beschrieben?
+    description: "Werden besondere Schutzmaßnahmen für Art. 9 Daten (Gesundheitsdaten, genetische Daten) beschrieben?"
 
   - id: med_secondary_use
     category: Medical Research
-    description: Falls eine Weiterverwendung von Daten geplant ist (Secondary Use): Ist dies in der Einwilligung abgedeckt?
+    description: "Falls eine Weiterverwendung von Daten geplant ist (Secondary Use): Ist dies in der Einwilligung abgedeckt?"
+
+  # --- KI / Apps / Register / IT-Umgebung ---
+  - id: ai_mentions
+    category: General
+    description: "Werden in einem der Dokumente Hinweise auf den Einsatz von KI genannt (z.B. „KI“, „künstliche Intelligenz“, „Machine Learning“, „AI“, „Artificial Intelligence“ o.ä.)? Wenn ja: in welchem Kontext und wofür?"
+
+  - id: apps_usage
+    category: General
+    description: "Wird in einem der Dokumente beschrieben, dass Apps verwendet werden (z.B. Patienten-App, Mobile App, Web-App)? Wenn ja: welche App, für welchen Zweck und durch wen (Patient:innen/Studienpersonal)?"
+
+  - id: registers_role
+    category: Medical Research
+    description: "Spielen Register eine Rolle (z.B. klinische Register)? Wenn ja: wird ein Register neu aufgesetzt oder ein bestehendes Register verwendet?"
+
+  - id: cloud_usage
+    category: TOMs
+    description: "Wird eine Cloud genutzt oder werden Systeme eingesetzt, die mit Cloud-Diensten funktionieren (z.B. SaaS/PaaS/IaaS)? Wenn ja: welche Anbieter/Services, wo wird gehostet und welche TOMs/AVV werden genannt?"
+
+  - id: commercial_software_usage
+    category: TOMs
+    description: "Werden kommerzielle Softwareprodukte oder kommerzielle Plattformen/Dienste verwendet? Wenn ja: welche Produkte/Anbieter und sind Verträge/AVV bzw. Rollen (Auftragsverarbeitung, gemeinsame Verantwortung) dokumentiert?"
+
+  # --- Drittlandtransfer / Datenflüsse ---
+  - id: transfer_third_country
+    category: ROPA
+    description: "Ist ein Drittlandtransfer (Drittlandsdatenfluss) vorgesehen oder möglich? Wenn ja: welche Länder, welche Empfänger/Anbieter und welche Transfergrundlage (z.B. Angemessenheitsbeschluss, SCCs, Art. 49) wird genannt?"
+
+  - id: transfer_us_or_no_adequacy
+    category: ROPA
+    description: "Ist ein Datenfluss in die USA oder in ein anderes Land ohne Angemessenheitsbeschluss vorgesehen? Wenn ja: wie wird dies begründet und abgesichert (z.B. SCCs, TIA, zusätzliche Maßnahmen)?"
+
+  # --- Finanzierung / Zahlungen ---
+  - id: patient_external_payment
+    category: Medical Research
+    description: "Ist eine externe Bezahlung/Entschädigung von Patient:innen vorgesehen? Wenn ja: wie erfolgt die Auszahlung (Dienstleister/Zahlungsweg) und welche personenbezogenen Daten werden dafür verarbeitet?"
+
+  # --- Studiendesign / Verantwortlichkeiten ---
+  - id: study_sponsorship_and_design
+    category: Medical Research
+    description: "Wird der Studientyp eindeutig beschrieben (z.B. extern gesponsert, eigeninitiierte Studie, Doktorand:innen-Studie, Fragebogenstudie, multizentrisch, monozentrisch, FPDG-Studie)? Falls ja: welche Kategorie(n) trifft/treffen zu?"
+
+  - id: study_principal_investigator
+    category: Medical Research
+    description: "Wer ist der/die Principal Investigator (PI)?"
+
+  - id: study_responsible_department
+    category: Medical Research
+    description: "Aus welcher verantwortlichen Fachabteilung stammt das Konzept/Projekt?"
+
+  - id: study_type
+    category: Medical Research
+    description: "Welcher Studientyp ist es (z.B. interventionell, nicht-interventionell/Beobachtungsstudie, Registerstudie, Fragebogenstudie)?"
+
+  - id: study_regulatory_classification
+    category: Medical Research
+    description: "Handelt es sich um eine Arzneimittelstudie, eine Medizinprodukte-Studie, eine Studie nach Berufsordnung, eine Studie mit Behandlungsdaten oder eine einwilligungsbasierte Studie (Mehrfachnennung möglich)? Ist dies in den Dokumenten konsistent beschrieben?"
+
+  - id: study_prospective_retrospective
+    category: Medical Research
+    description: "Ist die Studie prospektiv, retrospektiv oder beides? Ist die Einordnung in den Dokumenten klar beschrieben?"
+
+  # --- Betroffene Personengruppen / Datenarten ---
+  - id: children_involved
+    category: Medical Research
+    description: "Sind Kinder/Minderjährige in die Studie einbezogen? Wenn ja: sind besondere Einwilligungs- und Schutzanforderungen beschrieben?"
+
+  - id: genetic_material_usage
+    category: Medical Research
+    description: "Werden genetisches Material oder genetische Daten erhoben, verwendet oder analysiert? Wenn ja: sind Zweck, Umfang und besondere Schutzmaßnahmen beschrieben?"
+
+  - id: imaging_procedures_usage
+    category: Medical Research
+    description: "Werden bildgebende Verfahren verwendet (z.B. MRT, CT oder andere)? Wenn ja: welche Bilddaten fallen an und wie werden sie gespeichert/übermittelt (z.B. DICOM, Pseudonymisierung)?"
+
+  - id: voice_data_recording
+    category: Medical Research
+    description: "Werden Stimmdaten/Audiodaten aufgenommen oder verarbeitet? Wenn ja: zu welchem Zweck und mit welchen Schutzmaßnahmen?"
 
   # --- Konsistenz ---
   - id: consistency
     category: Consistency
-    description: Widersprechen sich Angaben in verschiedenen Dokumenten (z.B. Speicherfristen in VVT vs. Patienteninfo)?
+    description: "Widersprechen sich Angaben in verschiedenen Dokumenten (z.B. Speicherfristen in VVT vs. Patienteninfo)?"
