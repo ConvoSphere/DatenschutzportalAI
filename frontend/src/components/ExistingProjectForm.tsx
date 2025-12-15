@@ -49,7 +49,6 @@ export function ExistingProjectForm({
 }: ExistingProjectFormProps) {
   const { t } = useLanguage();
 
-  const [legalConfirmed, setLegalConfirmed] = useState(false);
   const [localErrors, setLocalErrors] = useState<string[]>([]);
 
   const institutionName = `${t('institution.university')} / ${t('institution.clinic')}`;
@@ -58,10 +57,6 @@ export function ExistingProjectForm({
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!legalConfirmed) {
-      setLocalErrors([t('error.legalRequired')]);
-      return;
-    }
     setLocalErrors([]);
     originalOnSubmit(e);
   };
@@ -216,22 +211,6 @@ export function ExistingProjectForm({
                 );
               })}
             </div>
-          </div>
-
-          {/* Legal Confirmation */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-             <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="legalConfirmation"
-                  checked={legalConfirmed}
-                  onChange={(e) => setLegalConfirmed(e.target.checked)}
-                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label htmlFor="legalConfirmation" className="text-gray-900 font-medium">
-                  {t('form.legalConfirmation')} <span className="text-red-500">{t('form.required')}</span>
-                </label>
-             </div>
           </div>
 
           {/* Errors and Warnings */}

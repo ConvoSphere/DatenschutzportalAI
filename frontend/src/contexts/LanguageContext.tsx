@@ -78,7 +78,7 @@ const translations = {
     
     // Categories
     'category.datenschutzkonzept': 'Datenschutzkonzept',
-    'category.verantwortung': 'Übernahme der Verantwortung',
+    'category.verantwortung': 'Ich bestätige die rechtskonforme Nutzung der Daten',
     'category.schulung_uni': 'Schulung Uni Nachweis',
     'category.schulung_ukf': 'Schulung UKF Nachweis',
     'category.einwilligung': 'Einwilligungsformular(e)/PatInfo(s)',
@@ -241,7 +241,7 @@ const translations = {
     
     // Categories
     'category.datenschutzkonzept': 'Data Protection Concept',
-    'category.verantwortung': 'Assumption of Responsibility',
+    'category.verantwortung': 'I confirm the legally compliant use of the data',
     'category.schulung_uni': 'University Training Certificate',
     'category.schulung_ukf': 'UKF Training Certificate',
     'category.einwilligung': 'Consent Form(s)/PatInfo(s)',

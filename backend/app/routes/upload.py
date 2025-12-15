@@ -108,19 +108,15 @@ async def upload_documents(
                 detail=f"Failed to create project folder in Nextcloud at path: {project_path}. Please check Nextcloud permissions and ensure the base path exists."
             )
         
-        # Upload files by category
+        # Upload files directly to project folder (no subfolders)
         uploaded_files = []
         logger.info(f"Starting upload of {len(files)} files...")
         for idx, file in enumerate(files, 1):
             category = categories_map.get(file.filename, "sonstiges")
             logger.debug(f"Uploading file {idx}/{len(files)}: {file.filename} to category: {category}")
             
-            category_path = f"{project_path}/{category}"
-            if not nextcloud.create_folder(category_path):
-                logger.error(f"Failed to create category folder: {category_path}")
-                raise HTTPException(status_code=500, detail=f"Failed to create category folder: {category}")
-            
-            file_path = f"{category_path}/{file.filename}"
+            # Upload directly to project folder, no category subfolders
+            file_path = f"{project_path}/{file.filename}"
             if not await nextcloud.upload_file(file, file_path):
                 logger.error(f"Failed to upload file: {file.filename} to {file_path}")
                 raise HTTPException(status_code=500, detail=f"Failed to upload file: {file.filename}")
