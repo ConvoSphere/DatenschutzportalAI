@@ -51,6 +51,14 @@ class AIAuditService:
         if settings.ai_api_base_url:
             os.environ["OPENAI_BASE_URL"] = settings.ai_api_base_url
         
+        # Configure proxy if provided (useful for corporate networks or tunneling)
+        if settings.ai_proxy:
+             # Standard proxy env vars for requests/aiohttp/httpx
+            os.environ["HTTP_PROXY"] = settings.ai_proxy
+            os.environ["HTTPS_PROXY"] = settings.ai_proxy
+            # OpenAI specific (though usually standard env vars are enough)
+            # os.environ["OPENAI_PROXY"] = settings.ai_proxy 
+        
         self.agent = Agent(
             model=settings.ai_model_name,
             system_prompt=self.criteria.system_prompt,
