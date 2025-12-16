@@ -56,9 +56,11 @@ export function useDataProtectionWorkflow() {
     if (type === 'new') {
       setCategories(createNewProjectCategories());
       setCurrentStep('form');
-    } else {
+    } else if (type === 'existing') {
       setCategories(createExistingProjectCategories());
       setCurrentStep('existingProject');
+    } else if (type === 'privacy-concept') {
+      setCurrentStep('privacyConceptGenerator');
     }
   };
 

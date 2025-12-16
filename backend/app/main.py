@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routes import upload, projects, health
+from app.routes import upload, projects, health, privacy_concept
 import logging
 import sys
 
@@ -37,6 +37,7 @@ app.add_middleware(
 app.include_router(upload.router, prefix="/api", tags=["upload"])
 app.include_router(projects.router, prefix="/api", tags=["projects"])
 app.include_router(health.router, prefix="/api", tags=["health"])
+app.include_router(privacy_concept.router, prefix="/api/privacy-concept", tags=["privacy-concept"])
 
 @app.get("/")
 async def root():
