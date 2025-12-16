@@ -52,15 +52,15 @@ export function ConceptExtractionReview({ data, onUpdate, onGenerate, onBack }: 
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Dynamically render cards for main fields */}
-                <Card title="Studientitel" value={data.study_title} onChange={(v) => handleChange('study_title', v)} />
+                <Card title="Studientitel" value={data.study_title} onChange={(v) => handleChange('study_title', v)} multiline />
                 <Card title="Studientyp" value={data.study_type} onChange={(v) => handleChange('study_type', v)} />
                 <Card title="Principal Investigator" value={data.principal_investigator} onChange={(v) => handleChange('principal_investigator', v)} />
-                <Card title="Institution" value={data.institution} onChange={(v) => handleChange('institution', v)} />
+                <Card title="Institution" value={data.institution} onChange={(v) => handleChange('institution', v)} multiline />
                 <Card title="Patientenzahl" value={data.patient_count} onChange={(v) => handleChange('patient_count', v)} />
                 <Card title="Ethikvotum" value={data.ethics_vote || ''} onChange={(v) => handleChange('ethics_vote', v)} />
                 
-                <Card title="Datenarten" value={data.data_types.join(', ')} onChange={(v) => handleChange('data_types', v.split(',').map(s => s.trim()))} />
-                <Card title="Datenquellen" value={data.data_sources.join(', ')} onChange={(v) => handleChange('data_sources', v.split(',').map(s => s.trim()))} />
+                <Card title="Datenarten" value={data.data_types.join(', ')} onChange={(v) => handleChange('data_types', v.split(',').map(s => s.trim()))} multiline />
+                <Card title="Datenquellen" value={data.data_sources.join(', ')} onChange={(v) => handleChange('data_sources', v.split(',').map(s => s.trim()))} multiline />
                 <Card title="Verarbeitungsmethoden" value={data.processing_methods} onChange={(v) => handleChange('processing_methods', v)} multiline />
                 
                 <div className="bg-white border rounded-xl p-4 shadow-sm">
@@ -95,8 +95,7 @@ export function ConceptExtractionReview({ data, onUpdate, onGenerate, onBack }: 
                 <textarea 
                     value={data.study_goal}
                     onChange={(e) => handleChange('study_goal', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    rows={3}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none h-32"
                 />
             </div>
         </div>
@@ -105,14 +104,13 @@ export function ConceptExtractionReview({ data, onUpdate, onGenerate, onBack }: 
 
 function Card({ title, value, onChange, multiline = false }: { title: string, value: string, onChange: (v: string) => void, multiline?: boolean }) {
     return (
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow group">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 group-hover:text-blue-600 transition-colors">{title}</h3>
+        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow group flex flex-col h-full">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 group-hover:text-blue-600 transition-colors flex-shrink-0">{title}</h3>
             {multiline ? (
                 <textarea 
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className="w-full p-1 border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent transition-colors resize-none text-gray-800"
-                    rows={3}
+                    className="w-full p-1 border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent transition-colors resize-none text-gray-800 flex-grow"
                 />
             ) : (
                  <input 

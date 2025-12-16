@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Upload, FileText, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Upload, FileText, Loader2, Wand2 } from 'lucide-react';
 import { extractData } from '../../services/privacyConceptApi';
 import { ExtractedStudyData } from '../../types/privacy-concept';
 import { toast } from 'sonner';
@@ -8,10 +8,31 @@ interface ConceptInputProps {
   onDataExtracted: (data: ExtractedStudyData) => void;
 }
 
+const LOADING_MESSAGES = [
+  "Analysiere Dokumentenstruktur...",
+  "Extrahiere Metadaten...",
+  "Identifiziere Datenquellen...",
+  "Prüfe auf Pseudonymisierung...",
+  "Fasse Studienziele zusammen..."
+];
+
 export function ConceptInput({ onDataExtracted }: ConceptInputProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState(LOADING_MESSAGES[0]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isLoading) {
+      let i = 0;
+      interval = setInterval(() => {
+        i = (i + 1) % LOADING_MESSAGES.length;
+        setLoadingMessage(LOADING_MESSAGES[i]);
+      }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -100,7 +121,7 @@ export function ConceptInput({ onDataExtracted }: ConceptInputProps) {
           {isLoading ? (
             <>
               <Loader2 className="w-6 h-6 animate-spin" />
-              Analysiere...
+              <span>{loadingMessage}</span>
             </>
           ) : (
             <>
@@ -113,7 +134,11 @@ export function ConceptInput({ onDataExtracted }: ConceptInputProps) {
 
       {/* Right: Info / Preview */}
       <div className="hidden md:flex flex-col justify-center items-center bg-blue-50 rounded-2xl p-8 text-center">
-         <img src="/logo-right.png" alt="Logo" className="w-32 mb-6 opacity-50" />
+         {/* Using a placeholder logo or icon if image not available */}
+         <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mb-6 opacity-80">
+            <Wand2 className="w-16 h-16 text-blue-500" />
+         </div>
+         
          <h3 className="text-xl font-semibold text-blue-900 mb-4">Wie es funktioniert</h3>
          <div className="space-y-6 text-blue-800 max-w-sm">
             <div className="flex items-start gap-4 text-left">
