@@ -31,18 +31,32 @@ class PrivacyConceptService:
 
         self.extraction_agent = Agent(
             model=settings.ai_model_name,
-            system_prompt="""Du bist ein Datenschutzexperte für medizinische Forschung.
-Analysiere den Forschungsantrag und extrahiere strukturiert die Daten für das Datenschutzkonzept.
-Antworte AUSSCHLIESSLICH mit den geforderten Daten.""",
+            system_prompt="""Du bist ein Datenschutzexperte für medizinische Forschung an der Universitätsmedizin Frankfurt (UMF).
+Analysiere den vorliegenden Forschungsantrag präzise und extrahiere die für das Datenschutzkonzept relevanten Metadaten.
+
+WICHTIGE HINWEISE ZUR EXTRAKTION:
+- Studientyp: Unterscheide genau zwischen 'retrospektiv' (nur Bestandsdaten), 'prospektiv' (neue Datenerhebung) oder 'gemischt'.
+- Datenquellen: Achte auf Begriffe wie 'Orbis', 'iBDF', 'Klinisches Arbeitsplatzsystem', 'Patientenakte'.
+- Pseudonymisierung: Suche nach Hinweisen auf 'Treuhandstelle', 'ID-Liste', 'Code-Key'.
+- Institution: Falls nicht anders genannt, gehe von 'Universitätsmedizin Frankfurt' aus.
+
+Antworte AUSSCHLIESSLICH mit dem geforderten JSON-Objekt.""",
             result_type=ExtractedStudyData,
         )
 
         self.generation_agent = Agent(
             model=settings.ai_model_name,
-            system_prompt="""Du bist ein Datenschutzbeauftragter für die Universitätsmedizin Frankfurt.
-Erstelle ein VOLLSTÄNDIGES Datenschutzkonzept basierend auf den bereitgestellten Daten.
-Das Konzept muss GDPR (Art. 6, 9, 12-21, 89) und HDSIG § 24 konform sein.
-Verwende Markdown für die Formatierung.""",
+            system_prompt="""Du bist der Datenschutzbeauftragte der Universitätsmedizin Frankfurt (UMF).
+Deine Aufgabe ist das Verfassen eines professionellen, behördenreifen Datenschutzkonzepts für einen Forschungsantrag.
+
+STIL & TON:
+- Formale, juristisch präzise Amtssprache (Deutsch).
+- Sachlich, objektiv, direkt.
+- Verwende die korrekten rechtlichen Bezüge: DSGVO (Datenschutz-Grundverordnung) und HDSIG (Hessisches Datenschutz- und Informationsfreiheitsgesetz).
+
+FORMATIERUNG:
+- Nutze Markdown (# Überschriften).
+- Keine Platzhalter wie [Hier Datum einfügen] - fülle alles basierend auf den Daten oder sinnvollen Standards aus.""",
             result_type=str,
         )
 
@@ -101,8 +115,9 @@ Verwende Markdown für die Formatierung.""",
 
     async def generate_concept(self, data: ExtractedStudyData) -> str:
         prompt = f"""
-        Erstelle ein Datenschutzkonzept für folgende Studie:
+        Erstelle ein detailliertes Datenschutzkonzept für folgende Studie:
         
+        # STUDIENDATEN
         Titel: {data.study_title}
         Typ: {data.study_type}
         PI: {data.principal_investigator}
@@ -114,25 +129,56 @@ Verwende Markdown für die Formatierung.""",
         Verarbeitung: {data.processing_methods}
         Pseudonymisierung: {'Ja' if data.pseudonymization_usage else 'Nein'}
         Externe Weitergabe: {'Ja' if data.external_data_sharing else 'Nein'}
-        Ethikvotum: {data.ethics_vote or 'Nicht angegeben'}
+        Ethikvotum: {data.ethics_vote or 'Beantragt'}
         
-        Zusatzinfos:
-        Minimierung: {data.data_minimization}
-        Speicherort: {data.storage_location}
-        Archivierung: {data.archiving_period}
-        Interne Zugriffe: {', '.join(data.internal_access)}
-        Externe Partner: {data.external_partners}
-        
-        Struktur:
-        1. Darstellung des Forschungsvorhabens
-        2. Organisatorische Struktur
-        3. Beschreibung der Datenverarbeitung
-        4. Grundlagen zum Schutz
-        5. Rechte der Betroffenen
-        6. Organisatorische Maßnahmen
-        7. Technische Maßnahmen
-        
-        Antworte NUR mit dem Markdown-Text.
+        # ZUSATZINFOS
+        Minimierung: {data.data_minimization or 'Es werden nur die für die Forschungsfrage unbedingt erforderlichen Daten erhoben (Grundsatz der Datenminimierung).'}
+        Speicherort: {data.storage_location or 'U:\\Klifo (Geschütztes Netzlaufwerk der UMF)'}
+        Archivierung: {data.archiving_period or '10 Jahre nach Abschluss der Studie gemäß guter wissenschaftlicher Praxis'}
+        Interne Zugriffe: {', '.join(data.internal_access) if data.internal_access else 'Nur autorisierte Mitglieder der Forschungsgruppe'}
+        Externe Partner: {data.external_partners or 'Keine'}
+
+        # ANWEISUNG ZUR STRUKTUR (Bitte exakt einhalten)
+
+        ## 1. DARSTELLUNG DES FORSCHUNGSVORHABENS
+        - Beschreibe Ziel und Zweck basierend auf den Studiendaten.
+        - Begründe die Erforderlichkeit der Datenverarbeitung.
+        - Falls retrospektiv: Erkläre, warum eine Einwilligung unverhältnismäßig wäre (HDSIG § 24).
+        - Falls prospektiv: Erwähne die schriftliche Einwilligung der Patienten.
+
+        ## 2. ORGANISATORISCHE STRUKTUR
+        - Verantwortliche Stelle: Universitätsklinikum Frankfurt, Theodor-Stern-Kai 7, 60590 Frankfurt am Main.
+        - Institutsleitung: {data.principal_investigator}
+        - Datenschutzbeauftragter: Datenschutzbeauftragter der UMF (datenschutz@kgu.de).
+
+        ## 3. BESCHREIBUNG DER DATENVERARBEITUNG
+        - Art der Daten: {', '.join(data.data_types)}
+        - Kreis der Betroffenen: Patienten der {data.institution}
+        - Datenherkunft: {', '.join(data.data_sources)}
+        - Datenfluss: Beschreibe den Weg der Daten von der Quelle (z.B. Orbis) in die Forschungsdatenbank.
+        - Pseudonymisierung: Beschreibe das Verfahren (Trennung von ID und medizinischen Daten).
+
+        ## 4. RECHTSGRUNDLAGEN
+        - Nenne DSGVO Art. 6 Abs. 1 lit. e (öffentliches Interesse) sowie Art. 9 Abs. 2 lit. j (Forschungszwecke).
+        - Nenne HDSIG § 24 (Verarbeitung zu wissenschaftlichen Forschungszwecken).
+        - Falls Einwilligung vorliegt: DSGVO Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a.
+
+        ## 5. RECHTE DER BETROFFENEN
+        - Liste auf: Auskunftsrecht, Berichtigungsrecht, Löschrecht, Einschränkung der Verarbeitung, Widerspruchsrecht.
+        - Hinweis: Einschränkungen dieser Rechte sind gemäß HDSIG möglich, wenn sie den Forschungszweck unmöglich machen würden.
+
+        ## 6. ORGANISATORISCHE MAßNAHMEN
+        - Verpflichtung auf Datengeheimnis.
+        - Zugriffskonzepte (Need-to-know-Prinzip).
+        - Regelmäßige Schulungen der Mitarbeiter.
+
+        ## 7. TECHNISCHE MAßNAHMEN (TOMs)
+        - Speicherung auf gesicherten Servern der UMF (keine lokale Speicherung auf Laptops).
+        - Zugriffsschutz durch Passwörter und Active Directory.
+        - Automatische Backups durch das Zentrum für Informations- und Medizintechnik (ZIM).
+        - Verschlüsselung bei etwaigem Datentransfer.
+
+        Antworte NUR mit dem Markdown-Text. Beginne direkt mit der Überschrift "# Datenschutzkonzept".
         """
         
         result = await self.generation_agent.run(prompt)
