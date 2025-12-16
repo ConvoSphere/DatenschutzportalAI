@@ -45,6 +45,9 @@ class Settings(BaseSettings):
     ai_api_key: str
     ai_model_name: str = "gpt-4-turbo-preview"
     ai_proxy: str = None
+    
+    # Database
+    database_url: str = "sqlite+aiosqlite:///./app.db"
 
     class Config:
         env_file = ".env"

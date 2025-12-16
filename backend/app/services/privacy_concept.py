@@ -11,10 +11,15 @@ from pydantic_ai import Agent
 from app.config import settings
 from app.models.privacy_concept import ExtractedStudyData
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from app.models.db_models import PrivacyConceptDB
+
 logger = logging.getLogger(__name__)
 
 class PrivacyConceptService:
-    def __init__(self):
+    def __init__(self, db: Optional[AsyncSession] = None):
+        self.db = db
         # Configure OpenAI env vars for Pydantic AI
         if settings.ai_api_key:
             os.environ["OPENAI_API_KEY"] = settings.ai_api_key
@@ -147,3 +152,24 @@ Verwende Markdown für die Formatierung.""",
             else:
                 doc.add_paragraph(line)
         doc.save(output_path)
+
+    async def save_concept(self, extracted_data: ExtractedStudyData, markdown: str, session_id: Optional[str] = None) -> str:
+        if not self.db:
+             raise ValueError("DB Session not initialized")
+        
+        db_obj = PrivacyConceptDB(
+            extracted_data=extracted_data.model_dump(),
+            concept_markdown=markdown,
+            session_id=session_id
+        )
+        self.db.add(db_obj)
+        await self.db.commit()
+        await self.db.refresh(db_obj)
+        return db_obj.id
+
+    async def get_concept(self, concept_id: str) -> Optional[PrivacyConceptDB]:
+        if not self.db:
+             raise ValueError("DB Session not initialized")
+        
+        result = await self.db.execute(select(PrivacyConceptDB).where(PrivacyConceptDB.id == concept_id))
+        return result.scalars().first()

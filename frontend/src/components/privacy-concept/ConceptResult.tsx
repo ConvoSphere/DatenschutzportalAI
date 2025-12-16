@@ -1,7 +1,7 @@
 import React from 'react';
 import { ExtractedStudyData } from '../../types/privacy-concept';
-import { downloadDocx } from '../../services/privacyConceptApi';
-import { Download, Copy } from 'lucide-react';
+import { downloadDocx, saveConcept } from '../../services/privacyConceptApi';
+import { Download, Copy, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ConceptResultProps {
@@ -19,6 +19,15 @@ export function ConceptResult({ concept, data, onBack }: ConceptResultProps) {
             toast.error("Download fehlgeschlagen");
         }
     };
+    
+    const handleSave = async () => {
+        try {
+            await saveConcept(data, concept);
+            toast.success("Konzept erfolgreich gespeichert!");
+        } catch (error) {
+            toast.error("Speichern fehlgeschlagen");
+        }
+    };
 
     const handleCopy = () => {
         navigator.clipboard.writeText(concept);
@@ -31,6 +40,13 @@ export function ConceptResult({ concept, data, onBack }: ConceptResultProps) {
                 <h2 className="text-2xl font-bold text-gray-800">Datenschutzkonzept</h2>
                 <div className="flex gap-4 items-center">
                      <button onClick={onBack} className="text-gray-600 hover:text-gray-900">Zurück</button>
+                     <button 
+                        onClick={handleSave} 
+                        className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors"
+                    >
+                        <Save className="w-5 h-5" />
+                        Speichern
+                    </button>
                      <button 
                         onClick={handleDownload} 
                         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors"

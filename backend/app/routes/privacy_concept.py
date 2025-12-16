@@ -1,22 +1,43 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, BackgroundTasks, Depends
 from fastapi.responses import FileResponse
 from typing import List, Optional
+from sqlalchemy.ext.asyncio import AsyncSession
 import tempfile
 import os
 import shutil
 import logging
 
 from app.services.privacy_concept import PrivacyConceptService
-from app.models.privacy_concept import ExtractedStudyData, ConceptGenerationRequest, ExportRequest, ConceptResponse
+from app.models.privacy_concept import ExtractedStudyData, ConceptGenerationRequest, ExportRequest, ConceptResponse, SaveConceptRequest, SaveConceptResponse
+from app.database import get_db
 
 router = APIRouter()
-service = PrivacyConceptService()
 logger = logging.getLogger(__name__)
+
+def get_service(db: AsyncSession = Depends(get_db)) -> PrivacyConceptService:
+    return PrivacyConceptService(db)
+
+@router.post("/save", response_model=SaveConceptResponse)
+async def save_concept(
+    request: SaveConceptRequest,
+    service: PrivacyConceptService = Depends(get_service)
+):
+    try:
+        concept_id = await service.save_concept(
+            request.extracted_data, 
+            request.concept_markdown, 
+            request.session_id
+        )
+        return SaveConceptResponse(id=concept_id, message="Concept saved successfully")
+    except Exception as e:
+        logger.error(f"Save error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/extract", response_model=ExtractedStudyData)
 async def extract_data(
     files: List[UploadFile] = File(default=[]),
-    manual_text: Optional[str] = Form(None)
+    manual_text: Optional[str] = Form(None),
+    service: PrivacyConceptService = Depends(get_service)
 ):
     temp_files = []
     try:
@@ -49,7 +70,10 @@ async def extract_data(
                 pass
 
 @router.post("/generate", response_model=ConceptResponse)
-async def generate_concept(request: ConceptGenerationRequest):
+async def generate_concept(
+    request: ConceptGenerationRequest,
+    service: PrivacyConceptService = Depends(get_service)
+):
     try:
         markdown = await service.generate_concept(request.data)
         return ConceptResponse(concept_markdown=markdown)
@@ -58,7 +82,11 @@ async def generate_concept(request: ConceptGenerationRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/export")
-async def export_concept(request: ExportRequest, background_tasks: BackgroundTasks):
+async def export_concept(
+    request: ExportRequest, 
+    background_tasks: BackgroundTasks,
+    service: PrivacyConceptService = Depends(get_service)
+):
     try:
         if request.format == "docx":
             if not request.markdown_content:

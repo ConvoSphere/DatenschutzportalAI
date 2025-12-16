@@ -32,3 +32,12 @@ class ExportRequest(BaseModel):
     format: str = Field(..., pattern="^(docx|json|markdown)$")
     data: Optional[ExtractedStudyData] = None
     markdown_content: Optional[str] = None
+
+class SaveConceptRequest(BaseModel):
+    extracted_data: ExtractedStudyData
+    concept_markdown: str
+    session_id: Optional[str] = None
+
+class SaveConceptResponse(BaseModel):
+    id: str
+    message: str

@@ -1,4 +1,4 @@
-import { ExtractedStudyData } from '../types/privacy-concept';
+import { ExtractedStudyData, SaveConceptResponse } from '../types/privacy-concept';
 
 const API_BASE = '/api/privacy-concept';
 
@@ -31,6 +31,20 @@ export async function generateConcept(data: ExtractedStudyData): Promise<{ conce
        throw new Error(`Generation failed: ${errorText}`);
   }
   return response.json();
+}
+
+export async function saveConcept(data: ExtractedStudyData, markdown: string): Promise<SaveConceptResponse> {
+    const response = await fetch(`${API_BASE}/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ extracted_data: data, concept_markdown: markdown }),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Save failed: ${errorText}`);
+    }
+    return response.json();
 }
 
 export async function downloadDocx(markdown: string) {

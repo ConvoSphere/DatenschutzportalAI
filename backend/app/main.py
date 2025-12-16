@@ -2,8 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import upload, projects, health, privacy_concept
+from app.database import init_models
 import logging
 import sys
+from contextlib import asynccontextmanager
 
 # Configure logging
 logging.basicConfig(
@@ -16,10 +18,23 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Initializing database models...")
+    try:
+        await init_models()
+        logger.info("Database initialized.")
+    except Exception as e:
+        logger.error(f"Database initialization failed: {e}")
+    yield
+    # Shutdown
+
 app = FastAPI(
     title="Datenschutzportal API",
     description="API für Datenschutz-Dokument Upload",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 logger.info("Starting Datenschutzportal API")

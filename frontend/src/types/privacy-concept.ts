@@ -19,3 +19,8 @@ export interface ExtractedStudyData {
 }
 
 export type ConceptStep = 'input' | 'review' | 'result';
+
+export interface SaveConceptResponse {
+  id: string;
+  message: string;
+}
