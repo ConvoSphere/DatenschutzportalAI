@@ -7,6 +7,7 @@ import { ExistingProjectForm } from './ExistingProjectForm';
 import { LanguageSwitch } from './LanguageSwitch';
 import { PortalLogos } from './PortalLogos';
 import { UploadProgress } from './UploadProgress';
+import { PrivacyConceptWizard } from './privacy-concept/PrivacyConceptWizard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useDataProtectionWorkflow } from '../hooks/useDataProtectionWorkflow';
 import { useState } from 'react';
@@ -112,6 +113,14 @@ export function DataProtectionPortal() {
         isSubmitting={isSubmitting}
         errors={errors}
         warnings={warnings}
+      />
+    );
+  }
+
+  if (currentStep === 'privacyConceptGenerator') {
+    return (
+      <PrivacyConceptWizard
+        onBack={handleBackToProjectType}
       />
     );
   }

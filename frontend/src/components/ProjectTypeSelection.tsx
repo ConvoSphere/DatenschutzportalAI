@@ -1,11 +1,12 @@
 import React from 'react';
-import { FilePlus, FolderOpen } from 'lucide-react';
+import { FilePlus, FolderOpen, Wand2 } from 'lucide-react';
 import { LanguageSwitch } from './LanguageSwitch';
 import { PortalLogos } from './PortalLogos';
 import { useLanguage } from '../contexts/LanguageContext';
+import { ProjectType } from '../types';
 
 interface ProjectTypeSelectionProps {
-  onSelect: (type: 'new' | 'existing') => void;
+  onSelect: (type: ProjectType) => void;
 }
 
 export function ProjectTypeSelection({ onSelect }: ProjectTypeSelectionProps) {
@@ -13,7 +14,7 @@ export function ProjectTypeSelection({ onSelect }: ProjectTypeSelectionProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Top Bar */}
         <div className="flex items-center justify-between mb-6">
           <PortalLogos />
@@ -33,7 +34,7 @@ export function ProjectTypeSelection({ onSelect }: ProjectTypeSelectionProps) {
             {t('projectType.description')}
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Neues Projekt */}
             <button
               onClick={() => onSelect('new')}
@@ -79,6 +80,30 @@ export function ProjectTypeSelection({ onSelect }: ProjectTypeSelectionProps) {
                 </div>
               </div>
             </button>
+
+             {/* AI Generator */}
+             <button
+              onClick={() => onSelect('privacy-concept')}
+              className="group relative bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-purple-500 hover:shadow-lg transition-all duration-200"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-purple-500 transition-colors">
+                  <Wand2 className="w-10 h-10 text-purple-600 group-hover:text-white transition-colors" />
+                </div>
+                <h3 className="text-gray-900 mb-2">AI Concept Generator</h3>
+                <p className="text-gray-600">
+                  Automatische Erstellung von Datenschutzkonzepten aus Forschungsanträgen.
+                </p>
+              </div>
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </button>
+
           </div>
         </div>
 

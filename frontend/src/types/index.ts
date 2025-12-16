@@ -6,6 +6,6 @@ export interface FileCategory {
   files: File[];
 }
 
-export type WorkflowStep = 'institution' | 'projectType' | 'form' | 'existingProject' | 'confirmation';
+export type WorkflowStep = 'institution' | 'projectType' | 'form' | 'existingProject' | 'confirmation' | 'privacyConceptGenerator';
 export type Institution = 'university' | 'clinic' | null;
-export type ProjectType = 'new' | 'existing' | null;
+export type ProjectType = 'new' | 'existing' | 'privacy-concept' | null;
